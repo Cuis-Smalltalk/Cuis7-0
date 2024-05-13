@@ -1,0 +1,5 @@
+#macOS custom attributes
+.DS_Store
+
+#Windows VM ini file
+CuisVM.app/Contents/Windows-x86_64/Squeak.ini

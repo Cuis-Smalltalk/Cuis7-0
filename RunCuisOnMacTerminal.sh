@@ -1,0 +1,1 @@
+./CuisVM.app/Contents/MacOS/Squeak CuisImage/Cuis7.0.image
