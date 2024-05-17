@@ -1,6 +1,6 @@
-'From Cuis6.3 [latest update: #6156] on 29 December 2023 at 5:15:58 pm'!
+'From Cuis6.3 [latest update: #6302] on 26 March 2024 at 12:55:56 pm'!
 'Description ExtractMethod for optimized messages test'!
-!provides: 'BaseImageTests' 1 379!
+!provides: 'BaseImageTests' 1 391!
 !requires: '__Refactoring-TestData__' 1 0 nil!
 SystemOrganization addCategory: #'BaseImageTests-Kernel-Objects'!
 SystemOrganization addCategory: #'BaseImageTests-Kernel-Classes'!
@@ -317,16 +317,6 @@ RandomTest subclass: #ParkMiller93RandomTest
 ParkMiller93RandomTest class
 	instanceVariableNames: ''!
 
-!classDefinition: #CharacterSetTest category: #'BaseImageTests-Kernel-Text'!
-TestCase subclass: #CharacterSetTest
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'BaseImageTests-Kernel-Text'!
-!classDefinition: 'CharacterSetTest class' category: #'BaseImageTests-Kernel-Text'!
-CharacterSetTest class
-	instanceVariableNames: ''!
-
 !classDefinition: #CharacterTest category: #'BaseImageTests-Kernel-Text'!
 TestCase subclass: #CharacterTest
 	instanceVariableNames: ''
@@ -355,16 +345,6 @@ TestCase subclass: #SymbolTest
 	category: 'BaseImageTests-Kernel-Text'!
 !classDefinition: 'SymbolTest class' category: #'BaseImageTests-Kernel-Text'!
 SymbolTest class
-	instanceVariableNames: ''!
-
-!classDefinition: #UnicodeCodePointTest category: #'BaseImageTests-Kernel-Text'!
-TestCase subclass: #UnicodeCodePointTest
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'BaseImageTests-Kernel-Text'!
-!classDefinition: 'UnicodeCodePointTest class' category: #'BaseImageTests-Kernel-Text'!
-UnicodeCodePointTest class
 	instanceVariableNames: ''!
 
 !classDefinition: #UnicodeNormalizationTest category: #'BaseImageTests-Kernel-Text'!
@@ -857,16 +837,6 @@ DecompilerTests subclass: #DecompilerTestFailuresCollector
 DecompilerTestFailuresCollector class
 	instanceVariableNames: ''!
 
-!classDefinition: #MessageNodeTest category: #'BaseImageTests-Compiler'!
-TestCase subclass: #MessageNodeTest
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'BaseImageTests-Compiler'!
-!classDefinition: 'MessageNodeTest class' category: #'BaseImageTests-Compiler'!
-MessageNodeTest class
-	instanceVariableNames: ''!
-
 !classDefinition: #MirrorPrimitiveTests category: #'BaseImageTests-Compiler'!
 TestCase subclass: #MirrorPrimitiveTests
 	instanceVariableNames: ''
@@ -885,6 +855,46 @@ TestCase subclass: #ParseNodeEnumeratorTest
 	category: 'BaseImageTests-Compiler'!
 !classDefinition: 'ParseNodeEnumeratorTest class' category: #'BaseImageTests-Compiler'!
 ParseNodeEnumeratorTest class
+	instanceVariableNames: ''!
+
+!classDefinition: #ParseNodeTest category: #'BaseImageTests-Compiler'!
+TestCase subclass: #ParseNodeTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BaseImageTests-Compiler'!
+!classDefinition: 'ParseNodeTest class' category: #'BaseImageTests-Compiler'!
+ParseNodeTest class
+	instanceVariableNames: ''!
+
+!classDefinition: #BlockNodeTest category: #'BaseImageTests-Compiler'!
+ParseNodeTest subclass: #BlockNodeTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BaseImageTests-Compiler'!
+!classDefinition: 'BlockNodeTest class' category: #'BaseImageTests-Compiler'!
+BlockNodeTest class
+	instanceVariableNames: ''!
+
+!classDefinition: #MessageNodeTest category: #'BaseImageTests-Compiler'!
+ParseNodeTest subclass: #MessageNodeTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BaseImageTests-Compiler'!
+!classDefinition: 'MessageNodeTest class' category: #'BaseImageTests-Compiler'!
+MessageNodeTest class
+	instanceVariableNames: ''!
+
+!classDefinition: #VariableNodeTest category: #'BaseImageTests-Compiler'!
+ParseNodeTest subclass: #VariableNodeTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BaseImageTests-Compiler'!
+!classDefinition: 'VariableNodeTest class' category: #'BaseImageTests-Compiler'!
+VariableNodeTest class
 	instanceVariableNames: ''!
 
 !classDefinition: #ParserTest category: #'BaseImageTests-Compiler'!
@@ -2900,7 +2910,7 @@ testComparisonWithFraction
 	self assert: 0.1 = (1/10).
 	self assert: (1/10) = 0.1! !
 
-!FloatTest methodsFor: 'tests - comparing' stamp: 'jmv 8/29/2019 16:20:39'!
+!FloatTest methodsFor: 'tests - comparing' stamp: 'jmv 2/6/2024 09:56:06'!
 testEqualityComparison
 	"In Cuis, it was decided to coerce operands to Float for comparison (if any of them was float),
 	in the classic ST-80 way"
@@ -2937,8 +2947,8 @@ testEqualityComparison
 	
 	"Test hash code"
 	self assert:
-		((Set new: 3) add: 3; add: 3.0; size) =
-		((Set new: 4) add: 3; add: 3.0; size).
+		((Set newWithRoomForMoreThan: 3) add: 3; add: 3.0; size) =
+		((Set newWithRoomForMoreThan: 4) add: 3; add: 3.0; size).
 
 
 	self assert: 9007199254740996 = 9007199254740996.0.
@@ -3701,14 +3711,14 @@ testNoIntegerHash
 	self deny: Float pi hash = (Float pi *1.00000000000001) hash.
 	self deny: Float pi hash = (Float pi /1.00000000000001) hash.! !
 
-!FloatTest methodsFor: 'tests - hash' stamp: 'nice 2/13/2010 04:15'!
+!FloatTest methodsFor: 'tests - hash' stamp: 'jmv 2/6/2024 09:56:29'!
 testSetOfFloat
 	"Classical disagreement between hash and = did lead to a bug.
 	This is a non regression test from http://bugs.squeak.org/view.php?id=3360"
 
 	| size3 size4 |
-	size3 := (Set new: 3) add: 3; add: 3.0; size.
-	size4 := (Set new: 4) add: 3; add: 3.0; size.
+	size3 := (Set newWithRoomForMoreThan: 3) add: 3; add: 3.0; size.
+	size4 := (Set newWithRoomForMoreThan: 4) add: 3; add: 3.0; size.
 	self assert: size3 = size4 description: 'The size of a Set should not depend on its capacity.'! !
 
 !FloatTest methodsFor: 'tests - constants' stamp: 'jmv 12/27/2018 18:37:19'!
@@ -4817,7 +4827,7 @@ testPrimTimesTwoPower
 	self assert: (Float negativeInfinity timesTwoPower: -1024) = Float negativeInfinity.
 	self assert: (Float nan timesTwoPower: 2) isNaN.! !
 
-!FloatTest methodsFor: 'tests - primitives' stamp: 'jmv 3/12/2019 14:39:27'!
+!FloatTest methodsFor: 'tests - primitives' stamp: 'jmv 1/4/2024 16:00:48'!
 testPrimTruncated
 
 	self assert: 1.0 primTestTruncated == 1.
@@ -4853,7 +4863,8 @@ testPrimTruncated
 	self assert: SmallInteger maxVal asFloat predecessor primTestTruncated = SmallInteger maxVal asFloat predecessor asTrueFraction truncated.	
 	self assert: (SmallInteger maxVal+1) asFloat successor asTrueFraction truncated class = LargePositiveInteger.
 	self assert: (SmallInteger maxVal+1) asFloat successor primTestTruncated = # fail.
-	"Depends on rounding to nearest Float. This could change depending on SmallInteger maxVal. Currently false in 64 bits Spur image, but true in 32 bits Spur and V3 images."
+	"Depends on rounding to nearest Float. This could change depending on SmallInteger maxVal.
+	Currently false in 64 bits images, but true in 32 bits images."
 	SmallInteger maxVal asFloat asTrueFraction truncated class = SmallInteger
 		ifTrue: [ self assert: SmallInteger maxVal asFloat primTestTruncated = SmallInteger maxVal asFloat asTrueFraction truncated ]
 		ifFalse: [ self assert: SmallInteger maxVal asFloat primTestTruncated = #fail ].
@@ -4862,7 +4873,8 @@ testPrimTruncated
 	self assert: SmallInteger minVal asFloat successor primTestTruncated = SmallInteger minVal asFloat successor asTrueFraction truncated.	
 	self assert: (SmallInteger minVal-1) asFloat predecessor asTrueFraction truncated class = LargeNegativeInteger.
 	self assert: (SmallInteger minVal-1) asFloat predecessor primTestTruncated = # fail.
-	"Depends on rounding to nearestFloat. This could change depending on SmallInteger maxVal. Currently true in 64 bits Spur image, and in 32 bits Spur and V3 images."
+	"Depends on rounding to nearestFloat. This could change depending on SmallInteger maxVal.
+	Currently true in 64 bits images, and in 32 bits images."
 	SmallInteger minVal asFloat asTrueFraction truncated class = SmallInteger
 		ifTrue: [ self assert: SmallInteger minVal asFloat primTestTruncated = SmallInteger minVal asFloat asTrueFraction truncated ]
 		ifFalse: [ self assert: SmallInteger minVal asFloat primTestTruncated = #fail ].
@@ -7421,11 +7433,6 @@ testLCMProperties
 	self assert: (0 lcm: a) = 0.
 	self assert: (0 lcm: 0) = 0! !
 
-!LargeNegativeIntegerTest methodsFor: 'tests' stamp: 'jmv 8/21/2016 20:04:13'!
-testCompactClassIndex
-	Smalltalk isSpur ifFalse: [
-		self assert: LargeNegativeInteger indexIfCompact = 4 ]! !
-
 !LargeNegativeIntegerTest methodsFor: 'tests' stamp: 'ul 11/15/2010 11:51'!
 testDenormalizedPrintString
 	"Check that an un-normalized instance behaves reasonably."
@@ -7530,11 +7537,6 @@ testBitShift
 	"Check bitShift from and back to SmallInts"
 	
 	1 to: 257 do: [:i | self should: [((i bitShift: i) bitShift: 0-i) = i]].! !
-
-!LargePositiveIntegerTest methodsFor: 'tests' stamp: 'jmv 8/21/2016 20:04:20'!
-testCompactClassIndex
-	Smalltalk isSpur ifFalse: [
-		self assert: LargePositiveInteger indexIfCompact = 5 ]! !
 
 !LargePositiveIntegerTest methodsFor: 'tests' stamp: 'ul 11/15/2010 11:52'!
 testDenormalizedPrintString
@@ -8332,21 +8334,6 @@ rngClass
 
 	^ParkMiller93Random! !
 
-!CharacterSetTest methodsFor: 'testing includes' stamp: 'HAW 6/12/2019 17:32:08'!
-testIncludesReturnsFalseForCharacterNotIncluded
-
-	self deny: ((CharacterSet with: $a) includes: $b)! !
-
-!CharacterSetTest methodsFor: 'testing includes' stamp: 'HAW 6/12/2019 17:31:45'!
-testIncludesReturnsFalseForObjectsThatAreNotCharacters
-
-	self deny: ((CharacterSet with: $a) includes: 1)! !
-
-!CharacterSetTest methodsFor: 'testing includes' stamp: 'HAW 6/12/2019 17:32:24'!
-testIncludesReturnsTrueForCharacterIncluded
-
-	self assert: ((CharacterSet with: $a) includes: $a)! !
-
 !CharacterTest methodsFor: 'testing' stamp: 'jmv 10/6/2010 22:08'!
 testCaseConversion
 	"
@@ -8355,25 +8342,36 @@ testCaseConversion
 	self assert: ('año Comé tomá Camión' collect: [ :c | c asLowercase ]) = 'año comé tomá camión'.
 	self assert:('año Comé tomá Camión' collect: [ :c | c asUppercase ]) = 'AÑO COMÉ TOMÁ CAMIÓN'! !
 
+!CharacterTest methodsFor: 'testing' stamp: 'jmv 1/9/2024 12:43:41'!
+testCompareIsTransitive
+	| c1 c2 c3 |
+	1 to: 512 by: 8 do: [ :n1 |
+		c1 := Character codePoint: n1.
+		1 to: 512 by: 8 do: [ :n2 |
+			c2 := Character codePoint: n2.
+			1 to: 512 by: 8 do: [ :n3 |
+				c3 := Character codePoint: n3.
+				(c1 < c2) & (c2 < c3) ifTrue: [ self assert: (c1 < c3) ]]]]! !
+
 !CharacterTest methodsFor: 'testing' stamp: 'jmv 7/5/2022 15:56:54'!
 testIsCharacter
 	self assert: $a isCharacter.
 	self assert: $X isCharacter.
 	self assert: Character cr isCharacter.! !
 
-!CharacterTest methodsFor: 'testing' stamp: 'jmv 7/5/2022 16:43:11'!
+!CharacterTest methodsFor: 'testing' stamp: 'jmv 1/9/2024 12:55:01'!
 testSorting
 	"
 	self new testSorting
 	"
-	self assert: $a asCharacter < $á asCharacter.
-	self deny: $a asCharacter < $Á asCharacter.
-	self assert: $A asCharacter < $á asCharacter.
-	self assert: $A asCharacter < $Á asCharacter.
-	self assert: $á asCharacter < $b asCharacter.
-	self deny: $á asCharacter < $B asCharacter.
-	self assert: $Á asCharacter < $b asCharacter.
-	self assert: $Á asCharacter < $B asCharacter.! !
+	self assert: $a < $á.
+	self deny: $a < $Á.
+	self assert: $A < $á.
+	self assert: $A < $Á.
+	self assert: $á < $b.
+	self deny: $á < $B.
+	self assert: $Á < $b.
+	self assert: $Á < $B.! !
 
 !CharacterTest methodsFor: 'testing' stamp: 'jmv 10/6/2010 22:10'!
 testTestingMethods
@@ -8422,29 +8420,29 @@ testSomeLatinCharsFromUtf8
 		]].
 	self assert: string = 'áAåAæAñAÆA¥Aü'! !
 
-!CharacterTest methodsFor: 'UTF-8 conversion' stamp: 'jmv 7/5/2022 16:43:56'!
+!CharacterTest methodsFor: 'UTF-8 conversion' stamp: 'jmv 1/9/2024 12:54:18'!
 testSomeLatinCharsToUtf8
 	"
 	CharacterTest new testSomeLatinCharsToUtf8
 	"
 	| characters bytes |
-	characters _ 'áAåAæAñAÆA¥Aü' readStream.
-	bytes _ ByteArray streamContents: [ :strm |
+	characters := 'áAåAæAñAÆA¥Aü' readStream.
+	bytes := ByteArray streamContents: [ :strm |
 		[ characters atEnd ] whileFalse: [
 			Character
 				evaluate: [ :byte | strm nextPut: byte ]
-				withUtf8BytesOfUnicodeCodePoint: characters next codePoint ]].
+				withUtf8BytesOf: characters next codePoint ]].
 	self assert: bytes hex = 'C3A141C3A541C3A641C3B141C38641C2A541C3BC'! !
 
-!CharacterTest methodsFor: 'UTF-8 conversion' stamp: 'jmv 2/20/2013 20:09'!
+!CharacterTest methodsFor: 'UTF-8 conversion' stamp: 'jmv 1/9/2024 12:55:20'!
 testToUtf8
 	"
 	CharacterTest new testToUtf8
 	"
-	self assert: (Character utf8BytesOfUnicodeCodePoint: 16r0024) hex =  '24'.
-	self assert: (Character utf8BytesOfUnicodeCodePoint: 16r00A2) hex =  'C2A2'.
-	self assert: (Character utf8BytesOfUnicodeCodePoint: 16r20AC) hex = 'E282AC'.
-	self assert: (Character utf8BytesOfUnicodeCodePoint: 16r024B62) hex = 'F0A4ADA2'! !
+	self assert: (Character utf8BytesOf: 16r0024) hex =  '24'.
+	self assert: (Character utf8BytesOf: 16r00A2) hex =  'C2A2'.
+	self assert: (Character utf8BytesOf: 16r20AC) hex = 'E282AC'.
+	self assert: (Character utf8BytesOf: 16r024B62) hex = 'F0A4ADA2'! !
 
 !StringTest methodsFor: 'UTF-8 conversion' stamp: 'jmv 5/26/2022 12:00:49'!
 testAsUtf8
@@ -8770,38 +8768,6 @@ testIsValidKeywordSelectorIfItContainsKeywordsWithColons
 testIsValidUnarySelectorIfItStartsWithALetterAndDoesNotContainSeparators
 
 	self assert: #t234 isValidSelector! !
-
-!UnicodeCodePointTest methodsFor: 'testing' stamp: 'jmv 7/6/2022 09:31:50'!
-testCompareIsTransitive
-	| c1 c2 c3 |
-	1 to: 512 by: 8 do: [ :n1 |
-		c1 _ UnicodeCodePoint codePoint: n1.
-		1 to: 512 by: 8 do: [ :n2 |
-			c2 _ UnicodeCodePoint codePoint: n2.
-			1 to: 512 by: 8 do: [ :n3 |
-				c3 _ UnicodeCodePoint codePoint: n3.
-				(c1 < c2) & (c2 < c3) ifTrue: [ self assert: (c1 < c3) ]]]]! !
-
-!UnicodeCodePointTest methodsFor: 'testing' stamp: 'jmv 7/6/2022 09:23:47'!
-testCompareWithCharacters
-	| c1 c2 |
-	1 to: 255 do: [ :n1 |
-		c1 _ Character numericValue: n1.
-		1 to: 255 do: [ :n2 |
-			c2 _ Character numericValue: n2.
-			self assert: (c1 < c2) = (c1 < c2 asUnicodeCodePoint).
-			self assert: (c1 < c2) = (c1 asUnicodeCodePoint < c2).
-			self assert: (c1 < c2) = (c1 asUnicodeCodePoint < c2 asUnicodeCodePoint).
-			self assert: (c1 <= c2) = (c1 <= c2 asUnicodeCodePoint).
-			self assert: (c1 <= c2) = (c1 asUnicodeCodePoint <= c2).
-			self assert: (c1 <= c2) = (c1 asUnicodeCodePoint <= c2 asUnicodeCodePoint).
-			self assert: (c1 > c2) = (c1 > c2 asUnicodeCodePoint).
-			self assert: (c1 > c2) = (c1 asUnicodeCodePoint > c2).
-			self assert: (c1 > c2) = (c1 asUnicodeCodePoint > c2 asUnicodeCodePoint).
-			self assert: (c1 >= c2) = (c1 >= c2 asUnicodeCodePoint).
-			self assert: (c1 >= c2) = (c1 asUnicodeCodePoint >= c2).
-			self assert: (c1 >= c2) = (c1 asUnicodeCodePoint >= c2 asUnicodeCodePoint).
-			]]! !
 
 !UnicodeNormalizationTest methodsFor: 'tests' stamp: 'jmv 12/11/2022 19:35:18'!
 testCanonicalComposites
@@ -9432,18 +9398,18 @@ test04LatinUtf8SymbolFirst
 testSerialization
 	self assert: (Object unStream: (ReferenceStream streamedRepresentationOf: 'hello' asUnicodeString asSymbol)) = 'hello' asUnicodeString asSymbol! !
 
-!UnicodeTest methodsFor: 'set up' stamp: 'jmv 5/31/2016 11:24'!
+!UnicodeTest methodsFor: 'set up' stamp: 'jmv 3/20/2024 15:44:56'!
 setUp
 	"
 	self new setUp
 	"
+	super setUp.
+	bytesOfExample1 := #[16r61 16r62 16r63 16r20 16rC3 16rA0 16rC3 16rA8 16rE2 
+						16r82 16rAC 16r20 16rCE 16rB1 16rCE 16rB2 16rCE 16rB3].
 
-     bytesOfExample1 := #[16r61 16r62 16r63 16r20 16rC3 16rA0 16rC3 16rA8 16rE2 
-	                              16r82 16rAC 16r20 16rCE 16rB1 16rCE 16rB2 16rCE 16rB3].
-	
 	"see UnicodeNotes.md"
-	
-     "write the bytes of an UFT8 encoded string in binary mode to a file"
+
+	"write the bytes of an UFT8 encoded string in binary mode to a file"
 	self class fileName asFileEntry forceWriteStreamDo: [ :stream |
 		stream binary.
 		stream nextPutAll: bytesOfExample1 ]! !
@@ -9470,44 +9436,44 @@ test2ReadWithOutBinary
 	content := self class fileName asFileEntry textContents.
 	self deny: content = bytesOfExample1! !
 
-!UnicodeTest methodsFor: 'testing' stamp: 'jmv 5/26/2022 12:01:13'!
+!UnicodeTest methodsFor: 'testing' stamp: 'jmv 1/9/2024 12:51:36'!
 test3ReadUtf8
 	
 	"see UnicodeNotes.md"
      "
 	self new setUp test3ReadUtf8
 	"
-     | content byteArray |
-	byteArray _ self class fileName asFileEntry binaryContents.
-	content := String fromUtf8Bytes: byteArray.
-	self assert: content = 'abc àè€ αβγ'! !
+	| content byteArray |
+	byteArray := self class fileName asFileEntry binaryContents.
+	content := UnicodeString fromUtf8Bytes: byteArray.
+	self assert: content = 'abc àè€ αβγ'.! !
 
-!UnicodeTest methodsFor: 'testing' stamp: 'jmv 10/28/2022 18:44:48'!
+!UnicodeTest methodsFor: 'testing' stamp: 'jmv 1/9/2024 12:51:52'!
 test4BackConversion
 	"see UnicodeNotes.md"
 	"
 	self new setUp test4BackConversion
 	"
 	| contentInternalString contentByteArray |
-	contentInternalString _ String fromUtf8Bytes: self class fileName asFileEntry binaryContents.
-	contentByteArray _ self class fileName asFileEntry binaryContents.
+	contentInternalString := UnicodeString fromUtf8Bytes: self class fileName asFileEntry binaryContents.
+	contentByteArray := self class fileName asFileEntry binaryContents.
 	self assert: contentByteArray = contentInternalString asUtf8Bytes.! !
 
-!UnicodeTest methodsFor: 'testing' stamp: 'jmv 10/28/2022 18:45:42'!
+!UnicodeTest methodsFor: 'testing' stamp: 'jmv 1/9/2024 12:52:04'!
 test5ReadWriteUtf8
 	"see UnicodeNotes.md"
 	"
 	self new setUp test5ReadWriteUtf8
 	"
 	| content byteArray byteArray2 |
-	byteArray _ self class fileName asFileEntry binaryContents.
-	content _ String fromUtf8Bytes: byteArray.
+	byteArray := self class fileName asFileEntry binaryContents.
+	content := UnicodeString fromUtf8Bytes: byteArray.
 	self class fileName2 asFileEntry forceWriteStreamDo: [ :stream |
 		stream binary.
 		stream nextPutAll: content asUtf8Bytes ].
 	"compare the two versions: what is in file 'fileName' with what is in file 'fileName2'"
-	byteArray _ self class fileName asFileEntry binaryContents.
-	byteArray2 _ self class fileName2 asFileEntry binaryContents.
+	byteArray := self class fileName asFileEntry binaryContents.
+	byteArray2 := self class fileName2 asFileEntry binaryContents.
 	self assert: byteArray = byteArray2.! !
 
 !UnicodeTest methodsFor: 'testing' stamp: 'jmv 7/31/2023 10:59:54'!
@@ -16469,7 +16435,7 @@ thisClassDefinitionNode
 	
 	 ^self class methodNodeFor: self class definition noPattern: true ! !
 
-!ClosureCompilerTest methodsFor: 'source' stamp: 'jmv 3/13/2012 11:29'!
+!ClosureCompilerTest methodsFor: 'source' stamp: 'jmv 1/9/2024 16:00:21'!
 closureCases
 	^#(
 '| n |
@@ -16627,7 +16593,7 @@ mn generate: #(0 0 0 0).
 	inPrimitiveResponse := false.   "whether we are inside of primitiveResponse"
 	''Gnuifying''
 		displayProgressAt: Sensor mousePoint
-		from: 1 to: (inData occurrencesOf: Character crCharacter)
+		from: 1 to: (inData occurrencesOf: Character cr)
 		during:
 			[:bar | | lineNumber |
 			lineNumber := 0.
@@ -16732,20 +16698,20 @@ doTestDebuggerTempAccessWith: one with: two
 	self assert: local1 = 25.
 	self assert: remote1 = (6/7)! !
 
-!ClosureCompilerTest methodsFor: 'tests' stamp: 'jmv 6/1/2021 14:22:49'!
+!ClosureCompilerTest methodsFor: 'tests' stamp: 'jmv 3/14/2024 12:23:53'!
 supportTestSourceRangeAccessForDecompiledInjectInto: method source: source
 	"Test debugger source range selection for inject:into:"
 	^self
 		supportTestSourceRangeAccessForInjectInto: method
 		source: source
-		selectionSequence: #(	'_ arg1'
-								'do: [:argm1_5 | temp3 _ arg2 value: temp3 value: argm1_5]'
+		selectionSequence: #(	':= arg1'
+								'do: [:argm1_5 | temp3 := arg2 value: temp3 value: argm1_5]'
 								'value: temp3 value: argm1_5'
-								'_ arg2 value: temp3 value: argm1_5'
-								'temp3 _ arg2 value: temp3 value: argm1_5'
+								':= arg2 value: temp3 value: argm1_5'
+								'temp3 := arg2 value: temp3 value: argm1_5'
 								'value: temp3 value: argm1_5'
-								'_ arg2 value: temp3 value: argm1_5'
-								'temp3 _ arg2 value: temp3 value: argm1_5'
+								':= arg2 value: temp3 value: argm1_5'
+								'temp3 := arg2 value: temp3 value: argm1_5'
 								'^temp3')! !
 
 !ClosureCompilerTest methodsFor: 'tests' stamp: 'eem 6/4/2008 19:44'!
@@ -16818,13 +16784,13 @@ supportTestSourceRangeAccessForInjectInto: method source: source selectionSequen
 				 self assert: (Scanner new scanTokens: (source copyFrom: range first to: range last)) = debugTokens]].
 	self assert: evaluationCount = 2! !
 
-!ClosureCompilerTest methodsFor: 'tests' stamp: 'jmv 7/31/2023 12:17:23'!
+!ClosureCompilerTest methodsFor: 'tests' stamp: 'jmv 3/14/2024 12:18:54'!
 testBlockDoitDecompilation
 	"Tests that decompile of a doit block with remote vars executes correcly"
 	"Tests that decompilation of a Block, when 'method' of block is equivalent to that compiled by a DoIt, preserves the temp names "
 	
 	| blockSourceStream methodNode block decompiledBlock method |
-	blockSourceStream := '|x y| [:a :b | x _ a. y _ b. x + y]' readStream.
+	blockSourceStream := '|x y| [:a :b | x := a. y := b. x + y]' readStream.
 	methodNode := Compiler new 
 						from: blockSourceStream class: nil class context: nil notifying: nil;
 						translate: blockSourceStream noPattern: true ifFail: [nil].
@@ -16834,8 +16800,8 @@ testBlockDoitDecompilation
 	self shouldnt: [decompiledBlock := block decompile] raise: Error.
 	self assert: decompiledBlock printString equals:
  '{[ :argm0_4 :argm0_5 |
-	temp1 _ argm0_4.
-	temp3 _ argm0_5.
+	temp1 := argm0_4.
+	temp3 := argm0_5.
 	temp1 + temp3. ]}'.! !
 
 !ClosureCompilerTest methodsFor: 'tests' stamp: 'jmv 1/17/2011 00:13'!
@@ -16906,7 +16872,7 @@ testDebuggerTempAccess
 	"This test also fails in Squeak. Check if it is ever fixed."
 	self shouldFail: [ self doTestDebuggerTempAccessWith: 1 with: 2 ]! !
 
-!ClosureCompilerTest methodsFor: 'tests' stamp: 'jmv 6/1/2021 14:19:36'!
+!ClosureCompilerTest methodsFor: 'tests' stamp: 'jmv 3/14/2024 12:21:25'!
 testInjectIntoDecompilationsEncoderForV3PlusClosures
 	"Test various compilations decompile to the same code for a method sufficiently
 	 simple that this is possible and sufficiently complex that the code generated
@@ -16914,9 +16880,8 @@ testInjectIntoDecompilationsEncoderForV3PlusClosures
 	"self new testInjectIntoDecompilationsEncoderForV3PlusClosures"
 	| source |
 
-	source := (Collection sourceCodeAt: #inject:into:) asString.
-	{ EncoderForV3PlusClosures } do:
-		[:encoderClass| | method |
+	source := Collection sourceCodeAt: #inject:into:.
+	{ EncoderForV3PlusClosures } do: [ :encoderClass | | method |
 		method := (Parser new
 							encoderClass: encoderClass;
 							parse: source
@@ -16925,19 +16890,18 @@ testInjectIntoDecompilationsEncoderForV3PlusClosures
 		self assert: (Scanner new scanTokens: method decompileString)
 					= #(inject: arg1 into: arg2
 							| temp3 |
-							temp3 _ arg1 .
-							self do: [ ':argm1_5' | temp3 _ arg2 value: temp3 value: argm1_5 ] .
+							temp3 := arg1 .
+							self do: [ ':argm1_5' | temp3 := arg2 value: temp3 value: argm1_5 ] .
 							^ temp3 . )]! !
 
-!ClosureCompilerTest methodsFor: 'tests' stamp: 'jmv 5/27/2015 13:04'!
+!ClosureCompilerTest methodsFor: 'tests' stamp: 'jmv 3/14/2024 12:21:01'!
 testInjectIntoDecompiledDebugs
 	"Test various debugs of the decompiled form debug correctly."
 	"self new testInjectIntoDecompiledDebugs"
 	| source |
 
-	source := (Collection sourceCodeAt: #inject:into:) asString.
-	{ EncoderForV3PlusClosures } do:
-		[:encoderClass| | method |
+	source := Collection sourceCodeAt: #inject:into:.
+	{ EncoderForV3PlusClosures } do: [ :encoderClass | | method |
 		method := (Parser new
 							encoderClass: encoderClass;
 							parse: source
@@ -17003,12 +16967,12 @@ testInlineBlockCollectionSD1
 	b2 := b2 asArray collect: [:b | b value].
 	self assert: b1 = b2! !
 
-!ClosureCompilerTest methodsFor: 'tests' stamp: 'eem 6/4/2008 15:20'!
+!ClosureCompilerTest methodsFor: 'tests' stamp: 'jmv 3/14/2024 12:21:37'!
 testSourceRangeAccessForClosureBytecodeInjectInto
 	"Test debugger source range selection for inject:into: for a version compiled with closures"
 	"self new testSourceRangeAccessForClosureBytecodeInjectInto"
 	| source method |
-	source := (Collection sourceCodeAt: #inject:into:) asString.
+	source := Collection sourceCodeAt: #inject:into:.
 	method := (Parser new
 						encoderClass: EncoderForV3PlusClosures;
 						parse: source
@@ -17016,12 +16980,12 @@ testSourceRangeAccessForClosureBytecodeInjectInto
 					generate: (Collection compiledMethodAt: #inject:into:) trailer.
 	self supportTestSourceRangeAccessForInjectInto: method source: source! !
 
-!ClosureCompilerTest methodsFor: 'tests' stamp: 'eem 6/4/2008 11:40'!
+!ClosureCompilerTest methodsFor: 'tests' stamp: 'jmv 3/14/2024 12:21:44'!
 testSourceRangeAccessForInjectInto
 	"Test debugger source range selection for inject:into: for the current version of the method"
 	"self new testSourceRangeAccessForInjectInto"
 	self supportTestSourceRangeAccessForInjectInto: (Collection compiledMethodAt: #inject:into:)
-		source: (Collection sourceCodeAt: #inject:into:) asString! !
+		source: (Collection sourceCodeAt: #inject:into:)! !
 
 !ClosureCompilerTest methodsFor: 'tests' stamp: 'eem 6/15/2008 11:26'!
 testTempNameAccessForInjectInto
@@ -17418,9 +17382,10 @@ bc11
 	{ b. d. e. f } print.
 	^{[ g + a * 10 + a + a + g + c ]. [ b _ 7. c _ c * 2 ]}.! !
 
-!ClosureSerializationTest methodsFor: 'setUp/tearDown' stamp: 'jmv 9/26/2019 23:19:41'!
+!ClosureSerializationTest methodsFor: 'setUp/tearDown' stamp: 'jmv 3/20/2024 15:45:08'!
 setUp
-	ivar _ 7.
+	super setUp.
+	ivar := 7.
 	^ivar! !
 
 !ClosureTests methodsFor: 'utilities' stamp: 'lr 3/9/2009 16:48'!
@@ -17978,32 +17943,6 @@ assert: aBoolean description: aString resumable: resumableBoolean
 failures
 	^failures! !
 
-!MessageNodeTest methodsFor: 'tests' stamp: 'HAW 12/10/2023 11:06:00'!
-cascadeMessageSend
-
-	1 printString; yourself! !
-
-!MessageNodeTest methodsFor: 'tests' stamp: 'HAW 12/10/2023 11:05:52'!
-messageSend
-
-	1 printString! !
-
-!MessageNodeTest methodsFor: 'tests' stamp: 'HAW 12/10/2023 11:06:08'!
-test01hasEquivalentReceiverWithWorksForAnyCombinationOfMessageSend
-
-	| cascadeMessageSend messageSend |
-	
-	messageSend := (self class >> #messageSend) methodNode block statements first.
-	"I look for the MessageNode in the sourceRanges because there is where the receiver is nil and 
-	#hasEquivalentReceiverWith: was not taking care of that case - Hernan"
-	cascadeMessageSend := (self class >> #cascadeMessageSend) methodNode completeSourceRanges keys detect: [ :a | a isMessageNode and: [ a selector key = #printString ]].
-	
-	self assert: (messageSend hasEquivalentReceiverWith: cascadeMessageSend).
-	self assert: (cascadeMessageSend hasEquivalentReceiverWith: messageSend).
-	self assert: (cascadeMessageSend hasEquivalentReceiverWith: cascadeMessageSend).
-	self assert: (messageSend hasEquivalentReceiverWith: messageSend).
-	! !
-
 !MirrorPrimitiveTests methodsFor: 'tests' stamp: 'jmv 12/28/2013 19:06'!
 testMirrorAt
 	| stackpBefore stackpAfter array byteArray |
@@ -18127,6 +18066,100 @@ testItEnumeratesAllTheParseNodesPresentInAMethodNode
 	}.
 
 	self assert: (enumeratedNodes includesAllOf: nodesToBeEnumerated)! !
+
+!ParseNodeTest methodsFor: 'parse nodes helpers' stamp: 'RNG 1/19/2018 21:09:10'!
+message: aSelector to: aVariableName
+
+	| variableNode selectorNode |
+	variableNode _ VariableNode named: aVariableName.
+	selectorNode _ SelectorNode new key: aSelector code: 34.
+	^ MessageNode new
+		receiver: variableNode
+		selector: selectorNode
+		arguments: #()
+		precedence: 1! !
+
+!BlockNodeTest methodsFor: 'detecting self recursion' stamp: 'RNG 1/19/2018 21:05:22'!
+testItDoesNotSendsAGivenMessageToSelfWhenTheBlockIsEmpty
+
+	| anEmptyBlock |
+	anEmptyBlock _ BlockNode empty.
+
+	self deny: (anEmptyBlock sendsMessageToSelf: #myMethod)! !
+
+!BlockNodeTest methodsFor: 'detecting self recursion' stamp: 'RNG 1/19/2018 21:08:08'!
+testItSendsAGivenMessageToSelfWhenItContainsAnStatementWithAMessageSendToSelf
+
+	| anEmptyBlock |
+	anEmptyBlock _ BlockNode withJust: (self message: #myMethod to: 'self').
+
+	self assert: (anEmptyBlock sendsMessageToSelf: #myMethod)! !
+
+!MessageNodeTest methodsFor: 'tests' stamp: 'HAW 12/10/2023 11:06:00'!
+cascadeMessageSend
+
+	1 printString; yourself! !
+
+!MessageNodeTest methodsFor: 'tests' stamp: 'HAW 12/10/2023 11:05:52'!
+messageSend
+
+	1 printString! !
+
+!MessageNodeTest methodsFor: 'tests' stamp: 'HAW 12/10/2023 11:06:08'!
+test01hasEquivalentReceiverWithWorksForAnyCombinationOfMessageSend
+
+	| cascadeMessageSend messageSend |
+	
+	messageSend := (self class >> #messageSend) methodNode block statements first.
+	"I look for the MessageNode in the sourceRanges because there is where the receiver is nil and 
+	#hasEquivalentReceiverWith: was not taking care of that case - Hernan"
+	cascadeMessageSend := (self class >> #cascadeMessageSend) methodNode completeSourceRanges keys detect: [ :a | a isMessageNode and: [ a selector key = #printString ]].
+	
+	self assert: (messageSend hasEquivalentReceiverWith: cascadeMessageSend).
+	self assert: (cascadeMessageSend hasEquivalentReceiverWith: messageSend).
+	self assert: (cascadeMessageSend hasEquivalentReceiverWith: cascadeMessageSend).
+	self assert: (messageSend hasEquivalentReceiverWith: messageSend).
+	! !
+
+!MessageNodeTest methodsFor: 'detecting self recursion' stamp: 'RNG 1/19/2018 21:02:30'!
+testItDoesNotSendTheMessageToSelfWhenTheReceiverIsNotSelf
+
+	| messageNode |
+	messageNode _ self message: #myMethod to: 'super'.
+
+	self deny: (messageNode sendsMessageToSelf: #myMethod)! !
+
+!MessageNodeTest methodsFor: 'detecting self recursion' stamp: 'RNG 1/19/2018 21:02:19'!
+testItDoesNotSendTheMessageToSelfWhenTheReceiverIsSelfButTheSelectorIsDifferent
+
+	| messageNode |
+	messageNode _ self message: #myMethod to: 'self'.
+
+	self deny: (messageNode sendsMessageToSelf: #otherMethod)! !
+
+!MessageNodeTest methodsFor: 'detecting self recursion' stamp: 'RNG 1/19/2018 21:01:10'!
+testItSendsTheMessageToSelfWhenTheReceiverIsSelf
+
+	| messageNode |
+	messageNode _ self message: #myMethod to: 'self'.
+
+	self assert: (messageNode sendsMessageToSelf: #myMethod)! !
+
+!VariableNodeTest methodsFor: 'references to self' stamp: 'RNG 1/19/2018 20:51:09'!
+testItDoesNotReferencesSelfWhenTheVariableNameIsNotSelf
+
+	| variableNode |
+	variableNode _ VariableNode named: 'abc'.
+
+	self deny: variableNode referencesSelf! !
+
+!VariableNodeTest methodsFor: 'references to self' stamp: 'RNG 1/19/2018 20:50:13'!
+testItReferencesSelfWhenTheVariableNameIsSelf
+
+	| variableNode |
+	variableNode _ VariableNode named: 'self'.
+
+	self assert: variableNode referencesSelf! !
 
 !ParserTest methodsFor: 'test' stamp: 'jmv 7/4/2022 10:21:47'!
 testMulticharBinarySelectors
@@ -18414,7 +18447,7 @@ returnNodeOf: methodNode
 	
 	self error: 'No return node found'! !
 
-!ScannerTest methodsFor: 'testing' stamp: 'jmv 9/5/2016 20:48:53'!
+!ScannerTest methodsFor: 'testing' stamp: 'jmv 1/8/2024 17:16:14'!
 testLiteralSymbols
 
 	self assert: ('*+-/\~=<>&@%,|' allSatisfy: [:char | Scanner isLiteralSymbol: (String with: char) asSymbol])
@@ -18423,7 +18456,7 @@ testLiteralSymbols
 	self assert: (#('x' 'x:' 'x:y:' 'from:to:by:' 'yourself') allSatisfy: [:str | Scanner isLiteralSymbol: str asSymbol])
 		description: 'valid ascii selector symbols can be printed without string quotes'.
 		
-	((32 to: 94), (96 to: 126) collect: [:ascii | Character numericValue: ascii]) ,
+	((32 to: 94), (96 to: 126) collect: [:ascii | Character codePoint: ascii]) ,
 	#(':x:yourself' '::' 'x:yourself' '123' 'x0:x1:x2:' 'x.y.z' '1abc' 'a1b0c2' ' x' 'x ' '+x-y' '||' '-' '++' '+' '+/-' '-/+' '<|>' '#x' '()' '[]' '{}' '')
 		do: [:str |
 			self assert: (Compiler evaluate: str asSymbol printString) = str asSymbol
@@ -19232,16 +19265,12 @@ test03
 	self assert: (all includes: {'car'. String. Float pi. SmallFloat64}).
 	self assert: (all includes: {'cat'. UnicodeString. Date today. Date}).! !
 
-!FileIOAccessorTest methodsFor: 'private' stamp: 'jmv 5/31/2016 10:30'!
-defaultDirectoryPath
-	^DirectoryEntry currentDirectory pathName! !
-
-!FileIOAccessorTest methodsFor: 'testing' stamp: 'jmv 5/31/2016 10:48'!
+!FileIOAccessorTest methodsFor: 'testing' stamp: 'jmv 3/15/2024 16:53:35'!
 testDirectoryExists
 	"FileIOAccessorTest debug: #testDirectoryExists"
 	| subDirString dirString |
 	subDirString := 99999 atRandom asString.
-	dirString := self defaultDirectoryPath, FileIOAccessor default slash, subDirString.
+	dirString := DirectoryEntry userBaseDirectory pathName, FileIOAccessor default slash, subDirString.
 
 	FileIOAccessor default createDirectory: dirString.
 
@@ -19259,25 +19288,21 @@ directoryEntryForTest
 randomFileName
 	^100000 atRandom asString, '.fmtst'! !
 
-!FileManTest methodsFor: 'testing' stamp: 'jmv 6/15/2022 17:16:47'!
+!FileManTest methodsFor: 'testing' stamp: 'jmv 3/4/2024 15:35:39'!
 testAbsolutePath
 	"FileManTest debug: #testAbsolutePath"
 	| dirEntry dirEntry1 dirEntry2 dirEntry3 |
 	dirEntry := '/' asDirectoryEntry.
-	self should: [dirEntry = ':' asDirectoryEntry].
 	self should: [dirEntry = '\' asDirectoryEntry].
 	
 	dirEntry1 := '/temp/' asDirectoryEntry.
-	self should: [dirEntry1 = ':temp' asDirectoryEntry].
 	self should: [dirEntry1 = '\temp' asDirectoryEntry].
 
 	dirEntry2 := '/temp/a' asDirectoryEntry.
-	self should: [dirEntry2 = ':temp:a' asDirectoryEntry].
 	self should: [dirEntry2 = '\temp\a' asDirectoryEntry].
 
 	dirEntry3 := 'C:/temp/b' asDirectoryEntry.
-	self should: [dirEntry3 = 'C:\temp\b' asDirectoryEntry].
-	self should: [dirEntry3 = 'C::temp:b' asDirectoryEntry].! !
+	self should: [dirEntry3 = 'C:\temp\b' asDirectoryEntry].! !
 
 !FileManTest methodsFor: 'testing' stamp: 'jmv 5/31/2016 10:49'!
 testAtPut
@@ -19300,13 +19325,13 @@ testAtPut
 	dir recursiveDelete.
 	self should: [dir exists not]! !
 
-!FileManTest methodsFor: 'testing' stamp: 'jmv 5/31/2016 10:49'!
+!FileManTest methodsFor: 'testing' stamp: 'jmv 3/4/2024 15:35:54'!
 testConcatenation
 	"
 	FileManTest debug: #testConcatenation
 	"
 	| dir |
-	dir := ('./subDir' asDirectoryEntry / 'aaa/bbb' / 'ccc' / 'ddd\eee' / 'fff:ggg').
+	dir := ('./subDir' asDirectoryEntry / 'aaa/bbb' / 'ccc' / 'ddd\eee' / 'fff/ggg').
 	dir at: 'test1' put: 'RecursiveDeleted!!'.
 
 	self assert: dir name = 'ggg'.
@@ -19345,7 +19370,7 @@ testCopy
 	
 	! !
 
-!FileManTest methodsFor: 'testing' stamp: 'jmv 6/1/2016 17:17'!
+!FileManTest methodsFor: 'testing' stamp: 'jmv 3/15/2024 16:53:40'!
 testDefaultDirectory
 	"
 	FileManTest debug: #testDefaultDirectory
@@ -19353,13 +19378,9 @@ testDefaultDirectory
 	
 	| pathComponents |
 
-	"
-	See #asAbsolutePathName. See #isAbsolutePathName
-	self assert: '' asDirectoryEntry =  DirectoryEntry currentDirectory.
-	"
-
+	self assert: '' asDirectoryEntry =  DirectoryEntry userBaseDirectory.
 	pathComponents := '' asDirectoryEntry pathComponents.
-	self assert: pathComponents = DirectoryEntry currentDirectory pathComponents! !
+	self assert: pathComponents = DirectoryEntry userBaseDirectory pathComponents! !
 
 !FileManTest methodsFor: 'testing' stamp: 'jmv 5/31/2016 10:49'!
 testFileContents
@@ -19408,22 +19429,22 @@ testIsRelativePathName
 	self deny: 'C:/temp/b' isRelativePathName.
 	self deny: 'Macintosh HD/tmp' isRelativePathName.! !
 
-!FileManTest methodsFor: 'testing' stamp: 'jmv 5/31/2016 10:50'!
+!FileManTest methodsFor: 'testing' stamp: 'jmv 3/4/2024 15:36:12'!
 testPathComponents
 	"
 	FileManTest debug: #testPathComponents
 	"
 	| pathComponents |
 
-	pathComponents := './aaa/bbb\ccc:ddd' asDirectoryEntry pathComponents.
+	pathComponents := './aaa/bbb\ccc/ddd' asDirectoryEntry pathComponents.
 	pathComponents := pathComponents last: 4.
 	self assert: pathComponents asArray = #('aaa' 'bbb' 'ccc' 'ddd').
 
-	pathComponents := '/aaa/bbb\ccc:ddd' asDirectoryEntry pathComponents.
+	pathComponents := '/aaa/bbb\ccc/ddd' asDirectoryEntry pathComponents.
 	pathComponents := pathComponents last: 4.
 	self assert: pathComponents asArray = #('aaa' 'bbb' 'ccc' 'ddd').
 
-	pathComponents := 'aaa/bbb\ccc:ddd' asDirectoryEntry pathComponents.
+	pathComponents := 'aaa/bbb\ccc/ddd' asDirectoryEntry pathComponents.
 	pathComponents := pathComponents last: 4.
 	self assert: pathComponents asArray = #('aaa' 'bbb' 'ccc' 'ddd')! !
 
@@ -19515,7 +19536,7 @@ testRename
 	self should: [file1 exists not].
 	! !
 
-!FileManTest methodsFor: 'testing' stamp: 'jmv 5/31/2016 12:02'!
+!FileManTest methodsFor: 'testing' stamp: 'jmv 3/4/2024 15:36:21'!
 testRoot
 	"FileManTest debug: #testRoot"
 	| root |
@@ -19523,7 +19544,6 @@ testRoot
 	self should: [root pathComponents isEmpty].
 	FileIOAccessor default onUnix ifTrue: [
 		self should: [root = '\' asDirectoryEntry]. 
-		self should: [root = ':' asDirectoryEntry]. 
 		self should: [root = '/' asDirectoryEntry]]! !
 
 !FileManTest methodsFor: 'testing' stamp: 'jmv 5/31/2016 11:19'!
@@ -22679,11 +22699,12 @@ isAbstract
 
 	^DynamicTypingSmalltalkCompleter isForCurrentTypeSystem not! !
 
-!TaskbarTest methodsFor: 'Running' stamp: 'jmv 7/14/2022 21:51:15'!
+!TaskbarTest methodsFor: 'Running' stamp: 'jmv 3/20/2024 15:45:15'!
 setUp
 
-	needsDelete _ UISupervisor ui taskbar isNil.
-	taskbar _ UISupervisor ui hideTaskbar; showTaskbar; taskbar.
+	super setUp.
+	needsDelete := UISupervisor ui taskbar isNil.
+	taskbar := UISupervisor ui hideTaskbar; showTaskbar; taskbar.
 	taskbar screenSizeChanged.
 	"taskbar world runStepMethods"! !
 
@@ -22825,8 +22846,7 @@ testShouldRaiseWithMessageTextFailsWithDifferentMessageText
 				should: [ self error: 'some message' ]
 				raise: Error
 				withMessageText: '' ]
-		raise: TestResult failure 
-		! !
+		raise: TestResult failure! !
 
 !TestCaseTest methodsFor: 'exception testing tests' stamp: 'HAW 3/17/2019 06:42:30'!
 testShoulndFailErrorsWhenAnErrorIsSignaled
@@ -22924,17 +22944,19 @@ testAssertIsNotCloseWithPrecisionPassesWhenDifferenceIsBiggerThanPrecision
 	
 	self assert: originalNumber isNotCloseTo: newValue withPrecision: precision! !
 
-!TestCaseTest methodsFor: 'includes' stamp: 'HAW 5/15/2019 18:49:51'!
+!TestCaseTest methodsFor: 'includes' stamp: 'jmv 3/20/2024 18:35:09'!
 testAssertIncludesFailsWhenElementIsNotIncludedInCollection
-	
+
 	| collection anElement |
-	
-	anElement _ 1.
-	collection _ #().
-	
+
+	anElement := 1.
+	collection := #().
+
 	self should: [ self assert: collection includes: anElement ] 
 		 raise: TestResult failure
-		 withMessageText: collection asString, ' does not include ', anElement asString! !
+		withExceptionDo: [ :anException | | expectedError |
+			expectedError := collection asString, ' does not include ', anElement asString.
+			self assert: (anException messageText endsWith: expectedError) ]! !
 
 !TestCaseTest methodsFor: 'includes' stamp: 'HAW 5/15/2019 18:50:04'!
 testAssertIncludesShouldNotFailWhenElementIsInCollection
@@ -23360,9 +23382,10 @@ denyExistsClassCategory: aClassCategory
 		
 	self deny: (SystemOrganization hasCategory: aClassCategory) description: 'Can not run test because class category ', aClassCategory, ' already exists'! !
 
-!DynamicallyCodeCreationTest methodsFor: 'setup/teardown' stamp: 'HAW 12/17/2019 10:33:36'!
+!DynamicallyCodeCreationTest methodsFor: 'setup/teardown' stamp: 'jmv 3/20/2024 15:45:28'!
 setUp
 
+	super setUp.
 	"If the authorInitials are not set, they will be asked - Hernan"
 	UISupervisor whenUIinSafeState: [ Utilities authorInitials ].
 	"Because I'm using the same system to create classes and removed them with its category at tearDown, I want to be sure 
@@ -24287,16 +24310,16 @@ assert: expected equals: actual
 
 	super assert: actual equals: expected! !
 
-!RefactoringTest methodsFor: 'assertions' stamp: 'HAW 6/1/2017 19:01:00'!
-assertCreation: aCreationBlock failsWith: aMessageTextCreator
+!RefactoringTest methodsFor: 'assertions' stamp: 'jmv 3/20/2024 15:59:45'!
+assertCreation: aCreationBlock failsWith: aStringOrBlock
 
 	self 
 		should: aCreationBlock 
 		raise: self refactoringError
-		withMessageText: aMessageTextCreator ! !
+		withMessageText: aStringOrBlock ! !
 
-!RefactoringTest methodsFor: 'assertions' stamp: 'HAW 5/29/2023 12:17:08'!
-assertCreation: aCreationBlock warnsWith: aMessageTextCreator 
+!RefactoringTest methodsFor: 'assertions' stamp: 'jmv 3/20/2024 18:23:28'!
+assertCreation: aCreationBlock warnsWith: aStringOrBlock
 
 	| warningSignaled |
 	
@@ -24304,10 +24327,10 @@ assertCreation: aCreationBlock warnsWith: aMessageTextCreator
 	aCreationBlock 
 		on: self refactoringWarning
 		do: [ :aWarning |
-			self assert: aMessageTextCreator value equals: aWarning messageText.
+			self assert: aStringOrBlock value equals: aWarning messageText.
 			warningSignaled := true.
 			aWarning resume ].
-		
+
 	self assert: warningSignaled description: 'Warning was not signaled'! !
 
 !RefactoringTest methodsFor: 'exceptions' stamp: 'HAW 8/17/2018 16:38:44'!
@@ -26254,7 +26277,7 @@ assertExtracting: codeToExtract from: originalCode named: newMessage defines: ne
 		assertClassHasDefined: originalSelector withBody: updatedCode inCategory: category;
 		assertClassHasDefined: newMessage selector withBody: newMethodCodeWithRenamedArg inCategory: category! !
 
-!ExtractMethodTest methodsFor: 'assertions' stamp: 'HAW 7/18/2023 17:13:41'!
+!ExtractMethodTest methodsFor: 'assertions' stamp: 'jmv 3/26/2024 12:55:29'!
 creationWithMessage: aMessage onInterval: anIntervalToExtract ofMethod: methodToExtractCodeFrom failsWith: aRefactoringExceptionMessageEvaluationBlock errorCondition: anExceptionHandlingCondition
 
 	self
@@ -26263,7 +26286,7 @@ creationWithMessage: aMessage onInterval: anIntervalToExtract ofMethod: methodTo
 				fromInterval: anIntervalToExtract
 				of: methodToExtractCodeFrom
 				to: aMessage
-				categorizedAs: Categorizer default 
+				categorizedAs: ClassOrganizer defaultMethodCategory 
 				withArgumentNames: aMessage arguments]
 		raise: anExceptionHandlingCondition
 		withMessageText: aRefactoringExceptionMessageEvaluationBlock! !
@@ -29435,12 +29458,12 @@ setUp
 	
 	instanceVariableToPushDown := 'a'.! !
 
-!PushDownInstanceVariableTest methodsFor: 'assertions' stamp: 'HAW 12/26/2019 19:41:11'!
-assertPushDownCreationFailsWith: aMessageTextCreator
+!PushDownInstanceVariableTest methodsFor: 'assertions' stamp: 'jmv 3/20/2024 16:00:17'!
+assertPushDownCreationFailsWith: aStringOrBlock
 
 	self
 		assertCreation: [ PushDownInstanceVariable named: instanceVariableToPushDown from: classToRefactor. ]
-		failsWith: aMessageTextCreator ! !
+		failsWith: aStringOrBlock ! !
 
 !PushDownMethodTest methodsFor: 'assertions' stamp: 'HAW 7/12/2023 21:15:23'!
 assert: classToRefactor implementsSendingSubclassResponsibility: selector
@@ -29952,12 +29975,12 @@ setUp
 	
 	instanceVariableToPushUp := 'a'.! !
 
-!PushUpInstanceVariableTest methodsFor: 'assertions' stamp: 'HAW 12/26/2019 20:18:51'!
-assertPushUpCreationFailsWith: aMessageTextCreator
+!PushUpInstanceVariableTest methodsFor: 'assertions' stamp: 'jmv 3/20/2024 16:00:22'!
+assertPushUpCreationFailsWith: aStringOrBlock
 
 	self
 		assertCreation: [ PushUpInstanceVariable named: instanceVariableToPushUp from: classToRefactor. ]
-		failsWith: aMessageTextCreator.! !
+		failsWith: aStringOrBlock.! !
 
 !PushUpMethodTest methodsFor: 'tests' stamp: 'MSC 11/12/2019 11:47:47'!
 test01AnEmptyMethodOnClassToRefactorShouldBePushedUpToSuperclass
@@ -29978,7 +30001,7 @@ test01AnEmptyMethodOnClassToRefactorShouldBePushedUpToSuperclass
 	
 	! !
 
-!PushUpMethodTest methodsFor: 'tests' stamp: 'MEGL 7/12/2023 16:36:42'!
+!PushUpMethodTest methodsFor: 'tests' stamp: 'MEGL 8/21/2023 16:25:50'!
 test02AMethodReadingInstVarWarnsWhenPushedUpToSuperclass
 
 	| classToRefactorSuperclass classToRefactor selector newVariable refactoring |
@@ -29999,9 +30022,10 @@ test02AMethodReadingInstVarWarnsWhenPushedUpToSuperclass
 	
 	self assert: (classToRefactorSuperclass definesInstanceVariableNamed: newVariable).
 	self assert: (classToRefactorSuperclass includesSelector: selector).
+	self deny: (classToRefactor definesInstanceVariableNamed: newVariable).
 	self deny: (classToRefactor includesSelector: selector).! !
 
-!PushUpMethodTest methodsFor: 'tests' stamp: 'MEGL 7/12/2023 16:37:15'!
+!PushUpMethodTest methodsFor: 'tests' stamp: 'MEGL 8/21/2023 16:26:59'!
 test03AMethodWritingInstVarWarnsWhenPushedUpToSuperclass
 
 	| classToRefactorSuperclass classToRefactor selector newVariable refactoring |
@@ -30016,12 +30040,13 @@ test03AMethodWritingInstVarWarnsWhenPushedUpToSuperclass
 
 	self
 		assertCreation: [ refactoring := PushUpMethod for: classToRefactor >> selector ]
-		 warnsWith: [ PushUpMethod accessingInstanceVariableWarningMessage: { newVariable } ].
+		warnsWith: [ PushUpMethod accessingInstanceVariableWarningMessage: { newVariable }].
 		
 	refactoring apply.
 	
 	self assert: (classToRefactorSuperclass definesInstanceVariableNamed: newVariable).
 	self assert: (classToRefactorSuperclass includesSelector: selector).
+	self deny: (classToRefactor definesInstanceVariableNamed: newVariable).
 	self deny: (classToRefactor includesSelector: selector).! !
 
 !PushUpMethodTest methodsFor: 'tests' stamp: 'MSC 11/12/2019 11:47:57'!
@@ -30081,7 +30106,7 @@ test06AMethodAccessesSuperClassClassToRefactorInstVarShouldBePushedUpToSuperclas
 	self assert: (classToRefactorSuperclass includesSelector: selector).
 	self deny: (classToRefactor includesSelector: selector).! !
 
-!PushUpMethodTest methodsFor: 'tests' stamp: 'HAW 7/12/2023 20:37:43'!
+!PushUpMethodTest methodsFor: 'tests' stamp: 'HAW 1/23/2024 15:00:48'!
 test07ShouldWarnWhenNotEquivalentMethodExistsInSuperclass
 	
 	| classToRefactor classToRefactorSuperclass newVariable selector superclassMethodContent |
@@ -30099,11 +30124,11 @@ test07ShouldWarnWhenNotEquivalentMethodExistsInSuperclass
 
 	self 
 		assertCreation: [ PushUpMethod for: classToRefactor >> selector ]
-		warnsWith: [ PushUpMethod methodImplementedInSuperclassWarningMessage ].
+		warnsWith: [ PushUpMethod methodWithDifferentImplementationInSuperclass: { selector } ].
 		
 	! !
 
-!PushUpMethodTest methodsFor: 'tests' stamp: 'HAW 5/26/2023 19:46:24'!
+!PushUpMethodTest methodsFor: 'tests' stamp: 'HAW 1/23/2024 15:33:57'!
 test08RemovesEquivalentMethodsFromSiblings
 
 	| classToRefactorSuperclass classToRefactor selector push sourceCode classToRefactorSibling |
@@ -30117,7 +30142,7 @@ test08RemovesEquivalentMethodsFromSiblings
  	classToRefactorSibling := self createClassNamed: (self classToRefactorName,'Sibling') asSymbol subclassOf: classToRefactorSuperclass.
 	classToRefactorSibling compile: sourceCode.
            
-	push := PushUpMethod for: classToRefactor >> selector additionallyRemovingFrom: { classToRefactorSibling }.
+	push := PushUpMethod for: classToRefactor >> selector additionallyRemovingFrom: { classToRefactor >> selector  -> {classToRefactorSibling} } asDictionary pushingUp: Set new.
 	push apply.
    
 	self assert: (classToRefactorSuperclass includesSelector: selector).
@@ -30126,7 +30151,7 @@ test08RemovesEquivalentMethodsFromSiblings
 	
 	! !
 
-!PushUpMethodTest methodsFor: 'tests' stamp: 'HAW 5/26/2023 17:14:54'!
+!PushUpMethodTest methodsFor: 'tests' stamp: 'HAW 1/23/2024 15:34:55'!
 test09CannotRemoveNotImplementedMethodFromAdditionalSubclasses
 
 	| classToRefactorSuperclass classToRefactor selector sourceCode classToRefactorSibling |
@@ -30140,14 +30165,14 @@ test09CannotRemoveNotImplementedMethodFromAdditionalSubclasses
  	classToRefactorSibling := self createClassNamed: (self classToRefactorName,'Sibling') asSymbol subclassOf: classToRefactorSuperclass.
 	   
 	self 
-		assertCreation: [  PushUpMethod for: classToRefactor >> selector additionallyRemovingFrom: { classToRefactorSibling } ]
+		assertCreation: [  PushUpMethod for: classToRefactor >> selector additionallyRemovingFrom: { classToRefactor >> selector -> {classToRefactorSibling} } asDictionary pushingUp: Set new ]
 		failsWith: [ PushUpMethod errorMessageForMethodCannotBeRemovedMethodFrom: { classToRefactorSibling } ].
 
 	
 	
 	! !
 
-!PushUpMethodTest methodsFor: 'tests' stamp: 'HAW 5/26/2023 17:24:10'!
+!PushUpMethodTest methodsFor: 'tests' stamp: 'HAW 1/23/2024 15:35:02'!
 test10CannotRemoveMethodFromNoSiblings
 
 	| classToRefactorSuperclass classToRefactor selector sourceCode classToRefactorSibling |
@@ -30162,14 +30187,14 @@ test10CannotRemoveMethodFromNoSiblings
 	classToRefactorSibling compile: sourceCode.
     
 	self 
-		assertCreation: [  PushUpMethod for: classToRefactor >> selector additionallyRemovingFrom: { classToRefactorSibling } ]
+		assertCreation: [  PushUpMethod for: classToRefactor >> selector additionallyRemovingFrom: { classToRefactor >> selector -> { classToRefactorSibling } } asDictionary pushingUp: Set new ]
 		failsWith: [ PushUpMethod errorMessageForNoSiblings: { classToRefactorSibling } ].
 
 	
 	
 	! !
 
-!PushUpMethodTest methodsFor: 'tests' stamp: 'HAW 5/26/2023 17:30:15'!
+!PushUpMethodTest methodsFor: 'tests' stamp: 'HAW 1/23/2024 15:35:07'!
 test11CannotRemoveNotEquivalantMethodsFromSiblings
 
 	| classToRefactorSuperclass classToRefactor selector classToRefactorSibling |
@@ -30182,7 +30207,7 @@ test11CannotRemoveNotEquivalantMethodsFromSiblings
 	classToRefactorSibling compile: selector, ' ^11 factorial'.
     
 	self 
-		assertCreation: [  PushUpMethod for: classToRefactor >> selector additionallyRemovingFrom: { classToRefactorSibling } ]
+		assertCreation: [  PushUpMethod for: classToRefactor >> selector additionallyRemovingFrom: { classToRefactor >> selector  -> {classToRefactorSibling} } asDictionary pushingUp: Set new ]
 		failsWith: [ PushUpMethod errorMessageForNotEquivalentMethods: { classToRefactorSibling } ].
 
 	
@@ -30246,6 +30271,226 @@ test14ShouldNotWarnWhenMethodExistsInSuperclassIsSubclassResponsibility
 		raise: self refactoringWarning 
 	
 	! !
+
+!PushUpMethodTest methodsFor: 'tests' stamp: 'HAW 1/23/2024 15:35:23'!
+test15AMethodThatDependsOnOtherMethodPushesUpMethodsToSuperclass
+
+	| classToRefactorSuperclass classToRefactor selector dependantSelector refactoring |
+
+	selector := #newMethod.
+	dependantSelector := #dependantMethod.
+
+	classToRefactorSuperclass := self createClassNamed: #Superclass.
+
+	classToRefactor := self createClassNamed: self classToRefactorName subclassOf: classToRefactorSuperclass.
+	classToRefactor compile: selector, ' ^ self ', dependantSelector.
+	classToRefactor compile: dependantSelector, ' ^ 1'.
+
+	refactoring := PushUpMethod for: classToRefactor >> selector additionallyRemovingFrom: Dictionary new pushingUp: { classToRefactor >> dependantSelector } asSet.
+	refactoring apply.
+
+	self assert: (classToRefactorSuperclass includesSelector: selector).
+	self assert: (classToRefactorSuperclass includesSelector: dependantSelector).
+	self deny: (classToRefactor includesSelector: selector).
+	self deny: (classToRefactor includesSelector: dependantSelector).! !
+
+!PushUpMethodTest methodsFor: 'tests' stamp: 'HAW 1/23/2024 15:35:32'!
+test16AMethodThatDependsOnACycleOfMethodsPushesUpMethodsToSuperclass
+
+	| classToRefactorSuperclass classToRefactor selector dependantSelector refactoring otherDependantSelector |
+
+	selector := #newMethod.
+	dependantSelector := #dependantMethod.
+	otherDependantSelector := #otherDependantSelector.
+
+	classToRefactorSuperclass := self createClassNamed: #Superclass.
+
+	classToRefactor := self createClassNamed: self classToRefactorName subclassOf: classToRefactorSuperclass.
+	classToRefactor compile: selector, ' ^ self ', dependantSelector.
+	classToRefactor compile: dependantSelector, ' ^ self ', otherDependantSelector.
+	classToRefactor compile: otherDependantSelector, ' ^ self ', selector.
+
+	refactoring := PushUpMethod for: classToRefactor >> selector additionallyRemovingFrom: Dictionary new pushingUp: { classToRefactor >> dependantSelector . classToRefactor >> otherDependantSelector } asSet.
+	refactoring apply.
+
+	self assert: (classToRefactorSuperclass includesSelector: selector).
+	self assert: (classToRefactorSuperclass includesSelector: dependantSelector).
+	self assert: (classToRefactorSuperclass includesSelector: otherDependantSelector).
+	self deny: (classToRefactor includesSelector: selector).
+	self deny: (classToRefactor includesSelector: dependantSelector).
+	self deny: (classToRefactor includesSelector: otherDependantSelector).! !
+
+!PushUpMethodTest methodsFor: 'tests' stamp: 'HAW 1/23/2024 15:35:40'!
+test17FailsWhenPushingADependantMethodAccessingInstVarDefinedAsTemporaryInSuperclass
+
+	| classToRefactorSuperclass classToRefactor selector superclassSelector dependantSelector newVariable |
+
+	newVariable := 'a'.	
+	superclassSelector := #superClassNewMethod.
+	selector := #newMethod.
+	dependantSelector := #dependantMethod.
+
+	classToRefactorSuperclass := self createClassNamed: #Superclass.
+	classToRefactorSuperclass compile: superclassSelector, '|', newVariable, '|', '^ 1 + ', newVariable.
+
+	classToRefactor := self createClassNamed: self classToRefactorName subclassOf: classToRefactorSuperclass instanceVariableNames: newVariable.
+	classToRefactor compile: selector, ' ^ self ', dependantSelector.
+	classToRefactor compile: dependantSelector, ' ^ 1 + ', newVariable.
+
+	self
+		assertCreation: [ PushUpMethod for: classToRefactor >> selector additionallyRemovingFrom: Dictionary new pushingUp: { classToRefactor >> dependantSelector } asSet ]
+		failsWith: [ PushUpInstanceVariable errorMessageForInstanceVariable: newVariable isDefinedInMethodsOf: classToRefactorSuperclass ].! !
+
+!PushUpMethodTest methodsFor: 'tests' stamp: 'HAW 1/23/2024 15:35:48'!
+test18ShouldWarnWhenNotEquivalentMethodOfDependantMethodExistsInSuperclass
+
+	| classToRefactor classToRefactorSuperclass newVariable selector dependantSelector superclassMethodContent |
+
+	newVariable := 'a'.	
+	selector := #newMethod.
+	dependantSelector := #dependantMethod.
+	superclassMethodContent := dependantSelector, '
+	^ 2 + ', newVariable, '.'.
+
+	classToRefactorSuperclass := self createClassNamed: #Superclass instanceVariableNames: newVariable.
+	classToRefactorSuperclass compile: dependantSelector, '^ 1 + ', newVariable.
+
+	classToRefactor := self createClassNamed: self classToRefactorName subclassOf: classToRefactorSuperclass.
+	classToRefactor compile: selector, ' ^ self ', dependantSelector.
+	classToRefactor compile: superclassMethodContent.
+
+	self 
+		assertCreation: [ PushUpMethod for: classToRefactor >> selector additionallyRemovingFrom: Dictionary new pushingUp: { classToRefactor >> dependantSelector } asSet ]
+		warnsWith: [ PushUpMethod methodWithDifferentImplementationInSuperclass: { dependantSelector } ].! !
+
+!PushUpMethodTest methodsFor: 'tests' stamp: 'HAW 1/23/2024 15:19:55'!
+test19ShouldSelectSiblingClassesWithEquivalentMethod
+
+	| superclass classToTest classWithEquivalentMethod selector methodContent equivalentMethod|
+
+	selector := #newMethod.
+	methodContent :=  selector, '^ 2'.
+
+	superclass := self createClassNamed: #Superclass.
+
+	classToTest := self createClassNamed: #ClassToTest subclassOf: superclass.
+	classToTest compile: methodContent.
+	
+	classWithEquivalentMethod := self createClassNamed: #ClassWithEquivalentMethod subclassOf: superclass.
+	classWithEquivalentMethod compile: methodContent.
+	
+	equivalentMethod := PushUpMethod equivalentMethodsOfSiblingsOfAll: { classToTest >> selector }.
+	   
+	self assert: (equivalentMethod size = 1).
+	self assert: (equivalentMethod includesKey: (classToTest >> selector)).
+	self assert: ((equivalentMethod at: classToTest >> selector) = { classWithEquivalentMethod }).! !
+
+!PushUpMethodTest methodsFor: 'tests' stamp: 'HAW 1/23/2024 15:19:55'!
+test20ShouldNotSelectSiblingClassesWithNoEquivalentMethod
+
+	| superclass classToTest classWithEquivalentMethod selector  equivalentMethod|
+
+	selector := #newMethod.
+
+	superclass := self createClassNamed: #Superclass.
+
+	classToTest := self createClassNamed: #ClassToTest subclassOf: superclass.
+	classToTest compile: selector, '^ 2'.
+	
+	classWithEquivalentMethod := self createClassNamed: #ClassWithEquivalentMethod subclassOf: superclass.
+	classWithEquivalentMethod compile: selector, '^ 3'.
+	
+	equivalentMethod := PushUpMethod equivalentMethodsOfSiblingsOfAll: { classToTest >> selector }.
+	   
+	self assert: (equivalentMethod isEmpty).! !
+
+!PushUpMethodTest methodsFor: 'tests' stamp: 'HAW 1/23/2024 15:19:55'!
+test21WhenMultipleMethodsShouldSelectSiblingClassesWithEquivalentMethodForEachOne
+
+	| superclass classToTest classWithEquivalentMethod selector anotherSelector methodContent anotherMethodContent equivalentMethod|
+
+	selector := #newMethod.
+	anotherSelector := #newMethod2.
+	methodContent :=  selector, '^ 2'.
+	anotherMethodContent := anotherSelector, '^ 1'.
+
+	superclass := self createClassNamed: #Superclass.
+
+	classToTest := self createClassNamed: #ClassToTest subclassOf: superclass.
+	classToTest compile: methodContent.
+	classToTest compile: anotherMethodContent.
+	
+	classWithEquivalentMethod := self createClassNamed: #ClassWithEquivalentMethod subclassOf: superclass.
+	classWithEquivalentMethod compile: methodContent.
+	classWithEquivalentMethod compile: anotherMethodContent.
+	
+	equivalentMethod := PushUpMethod equivalentMethodsOfSiblingsOfAll: { classToTest >> selector . classToTest >> anotherSelector }.
+	   
+	self assert: (equivalentMethod size = 2).
+	self assert: (equivalentMethod includesKey: (classToTest >> selector)).
+	self assert: (equivalentMethod includesKey: (classToTest >> anotherSelector)).
+	self assert: ((equivalentMethod at: classToTest >> selector) = { classWithEquivalentMethod }).
+	self assert: ((equivalentMethod at: classToTest >> anotherSelector) = { classWithEquivalentMethod }).! !
+
+!PushUpMethodTest methodsFor: 'tests' stamp: 'MEGL 8/20/2023 20:55:09'!
+test22ShouldSelectDependantSelectors
+
+	| superclass classToTest selector dependantSelector methodContent dependantMethodContent dependantSelectors|
+
+	selector := #newMethod.
+	dependantSelector := #dependantMethod.
+	methodContent :=  selector, '^ self ', dependantSelector.
+	dependantMethodContent :=  dependantSelector, '^ 2'.
+
+	superclass := self createClassNamed: #Superclass.
+	classToTest := self createClassNamed: #ClassToTest subclassOf: superclass.
+	classToTest compile: methodContent.
+	classToTest compile: dependantMethodContent.
+	
+	dependantSelectors := PushUpMethod selectAllMessageSendsToSelfNotImplementedInSuperClassFrom: ( classToTest >> selector ).
+	   
+	self assert: (dependantSelectors size = 1).
+	self assert: (dependantSelectors includes: dependantSelector).! !
+
+!PushUpMethodTest methodsFor: 'tests' stamp: 'MEGL 8/20/2023 20:58:47'!
+test23ShouldNotSelectDependantSelectorsWhenThereIsNone
+
+	| superclass classToTest selector methodContent dependantSelectors|
+
+	selector := #newMethod.
+	methodContent :=  selector, '^ 2'.
+
+	superclass := self createClassNamed: #Superclass.
+	classToTest := self createClassNamed: #ClassToTest subclassOf: superclass.
+	classToTest compile: methodContent.
+	
+	dependantSelectors := PushUpMethod selectAllMessageSendsToSelfNotImplementedInSuperClassFrom: ( classToTest >> selector ).
+	   
+	self assert: (dependantSelectors isEmpty).! !
+
+!PushUpMethodTest methodsFor: 'tests' stamp: 'MEGL 8/20/2023 20:57:41'!
+test24ShouldSelectCyclicDependantSelectors
+
+	| superclass classToTest selector dependantSelector otherDependantSelector methodContent dependantMethodContent otherDependantMethodContent dependantSelectors|
+
+	selector := #newMethod.
+	dependantSelector := #dependantMethod.
+	otherDependantSelector := #otherDependantSelector.
+	methodContent :=  selector, '^ self ', dependantSelector.
+	dependantMethodContent :=  dependantSelector, '^ self ', otherDependantSelector.
+	otherDependantMethodContent := otherDependantSelector, '^ self ', selector.
+
+	superclass := self createClassNamed: #Superclass.
+	classToTest := self createClassNamed: #ClassToTest subclassOf: superclass.
+	classToTest compile: methodContent.
+	classToTest compile: dependantMethodContent.
+	classToTest compile: otherDependantMethodContent.
+	
+	dependantSelectors := PushUpMethod selectAllMessageSendsToSelfNotImplementedInSuperClassFrom: ( classToTest >> selector ).
+	   
+	self assert: (dependantSelectors size = 2).
+	self assert: (dependantSelectors includes: dependantSelector).
+	self assert: (dependantSelectors includes: otherDependantSelector).! !
 
 !PushUpMethodTest methodsFor: 'class factory' stamp: 'MSC 11/12/2019 11:48:09'!
 classToRefactorName	
@@ -31285,18 +31530,18 @@ createClassToRefactor
 	
 	classToRefactor := self createClassNamed: self classToRefactorName instanceVariableNames: oldVariable ! !
 
-!RenameInstanceVariableTest methodsFor: 'class factory' stamp: 'HAW 5/28/2017 21:36:47'!
-createClassToRefactorAndAssertRenameCreationFailsWith: aMessageTextCreator
+!RenameInstanceVariableTest methodsFor: 'class factory' stamp: 'jmv 3/20/2024 16:00:33'!
+createClassToRefactorAndAssertRenameCreationFailsWith: aStringOrBlock
 
 	self createClassToRefactor.
-	self assertRenameCreationFailsWith: aMessageTextCreator ! !
+	self assertRenameCreationFailsWith: aStringOrBlock ! !
 
-!RenameInstanceVariableTest methodsFor: 'assertions' stamp: 'HAW 6/1/2017 19:00:37'!
-assertRenameCreationFailsWith: aMessageTextCreator
+!RenameInstanceVariableTest methodsFor: 'assertions' stamp: 'jmv 3/20/2024 16:00:27'!
+assertRenameCreationFailsWith: aStringOrBlock
 
 	self
 		assertCreation: [ RenameInstanceVariable from: oldVariable to: newVariable in: classToRefactor ]
-		failsWith: aMessageTextCreator ! !
+		failsWith: aStringOrBlock ! !
 
 !RenameInstanceVariableTest methodsFor: 'setup' stamp: 'HAW 5/28/2017 21:33:44'!
 setUp
@@ -33654,11 +33899,11 @@ simpleNoTimeoutTestResults
 		add: self doSomethingString;
 		yourself! !
 
-!ExceptionTester methodsFor: 'results' stamp: 'brp 10/21/2004 17:44'!
+!ExceptionTester methodsFor: 'results' stamp: 'jmv 2/6/2024 10:18:21'!
 simpleTimeoutTestResults
 
 	| things |
-	things := OrderedCollection new: self iterationsBeforeTimeout.
+	things := OrderedCollection new.
 
 	self iterationsBeforeTimeout timesRepeat: [ things add: self  doSomethingString ].
 	things add: self doSomethingElseString.

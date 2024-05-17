@@ -1,7 +1,7 @@
-'From Cuis 6.0 [latest update: #6058] on 27 October 2023 at 10:42:50 pm'!
+'From Cuis6.3 [latest update: #6247] on 2 March 2024 at 9:00:22 pm'!
 'Description '!
-!provides: 'Gettext' 1 28!
-!requires: 'System-Locales' 1 4 nil!
+!provides: 'Gettext' 1 30!
+!requires: 'Locales' 1 12 nil!
 SystemOrganization addCategory: #Gettext!
 
 
@@ -137,7 +137,7 @@ Usage:
 
 The domain name map to a .mo file in {image|vm}Path/locale/{lang}/LC_MESSAGES/domain.mo
 For example locale/fr/LC_MESSAGES/drgeo.mo
-{lang} is the host language locale resolved by the System-Locales package.
+{lang} is the host language locale resolved by the Locales package.
 
 Class variables:
  ClassCategories				IdentityDictionary -- classCategory -> domainName 
@@ -433,23 +433,23 @@ hashPjw: aString
 	^hash.
 ! !
 
-!MOFile methodsFor: 'public' stamp: 'hlsf 3/9/2022 18:28:42'!
+!MOFile methodsFor: 'public' stamp: 'jmv 2/6/2024 10:14:53'!
 load: aFileEntry localeID: id
 "all of strings are loaded. 
 translation strings are converted to internal string format on load time.
 original-string/index pairs are registerd to Dictionary on load time."
-	localeID _ id.
+	localeID := id.
 	aFileEntry readStreamDo: [:strm | |originalTable translatedTable|
 		self loadHeader: strm.
-		originalTable _ self loadStringPointers: strm offset: originalTableOffset.					
-		translatedTable _ self loadStringPointers: strm offset: translatedTableOffset.
-		originalStrings _ self loadStrings: strm pointers: originalTable.
-		translatedStrings _ self loadStrings: strm pointers: translatedTable.
-		translations _ Dictionary new: nStrings.  
+		originalTable := self loadStringPointers: strm offset: originalTableOffset.					
+		translatedTable := self loadStringPointers: strm offset: translatedTableOffset.
+		originalStrings := self loadStrings: strm pointers: originalTable.
+		translatedStrings := self loadStrings: strm pointers: translatedTable.
+		translations := Dictionary newWithRoomForMoreThan: nStrings.  
 		1 to: nStrings do: [:index | | key |
-			key _ originalStrings at: index.
+			key := originalStrings at: index.
 			translations at: key put: index].
-		originalStrings _ nil] ! !
+		originalStrings := nil] ! !
 
 !MOFile methodsFor: 'public'!
 searchFor: aString
