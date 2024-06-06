@@ -1,6 +1,6 @@
-'From Cuis6.3 [latest update: #6302] on 26 March 2024 at 12:55:56 pm'!
-'Description ExtractMethod for optimized messages test'!
-!provides: 'BaseImageTests' 1 391!
+'From Cuis7.1 [latest update: #6398] on 24 May 2024 at 3:48:29 pm'!
+'Description Rename extentions tests'!
+!provides: 'BaseImageTests' 1 394!
 !requires: '__Refactoring-TestData__' 1 0 nil!
 SystemOrganization addCategory: #'BaseImageTests-Kernel-Objects'!
 SystemOrganization addCategory: #'BaseImageTests-Kernel-Classes'!
@@ -1027,14 +1027,14 @@ TestCase subclass: #CuisSourceFileArrayTest
 CuisSourceFileArrayTest class
 	instanceVariableNames: ''!
 
-!classDefinition: #StandardFileStreamTest category: #'BaseImageTests-System-Files'!
-TestCase subclass: #StandardFileStreamTest
+!classDefinition: #FileStreamTest category: #'BaseImageTests-System-Files'!
+TestCase subclass: #FileStreamTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'BaseImageTests-System-Files'!
-!classDefinition: 'StandardFileStreamTest class' category: #'BaseImageTests-System-Files'!
-StandardFileStreamTest class
+!classDefinition: 'FileStreamTest class' category: #'BaseImageTests-System-Files'!
+FileStreamTest class
 	instanceVariableNames: ''!
 
 !classDefinition: #ReferenceStreamTest category: #'BaseImageTests-System-Object Storage'!
@@ -1275,6 +1275,16 @@ DynamicallyCodeCreationTest subclass: #CompilerTest
 	category: 'BaseImageTests-Compiler'!
 !classDefinition: 'CompilerTest class' category: #'BaseImageTests-Compiler'!
 CompilerTest class
+	instanceVariableNames: ''!
+
+!classDefinition: #SystemOrganizerTest category: #'BaseImageTests-System-Support'!
+DynamicallyCodeCreationTest subclass: #SystemOrganizerTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'BaseImageTests-System-Support'!
+!classDefinition: 'SystemOrganizerTest class' category: #'BaseImageTests-System-Support'!
+SystemOrganizerTest class
 	instanceVariableNames: ''!
 
 !classDefinition: #ChangesTest category: #'BaseImageTests-Tools-Changes'!
@@ -2546,6 +2556,13 @@ testMultiply
 	self assert: Float negativeInfinity * 1.0 = Float negativeInfinity.
 	self assert: (1.0 * Float nan) isNaN.
 	self assert: (Float nan * 1.0) isNaN.! !
+
+!FloatTest methodsFor: 'tests - arithmetic' stamp: 'dtl 1/15/2024 13:15'!
+testSmallIntegerDivide
+	"Mixed integer and float operation should not introduce loss of precision"
+
+	self should: [Compiler evaluate: '(3 / 5.0) = (3.0 / 5.0)']
+	! !
 
 !FloatTest methodsFor: 'tests - arithmetic' stamp: 'jmv 2/21/2019 17:41:52'!
 testSubtract
@@ -4028,6 +4045,10 @@ testIsZero
 	self assert: -0.0 isZero.
 	self deny:  0.1 isZero.! !
 
+!FloatTest methodsFor: 'tests - zero behavior' stamp: 'nice 1/26/2017 23:45'!
+testNegativeZeroAbs
+	self assert: Float negativeZero abs signBit = 0 description: 'the absolute value of a negative zero is zero'! !
+
 !FloatTest methodsFor: 'tests - zero behavior' stamp: 'jmv 4/5/2019 08:27:21'!
 testPositiveAndNegativeZero
 	self assert: Float negativeZero = Float zero description: 'Positive and negative zero are defined to be equal'.
@@ -4044,6 +4065,16 @@ testPositiveAndNegativeZero
 	self assertIsNegativeZero: Float fmin / -4.0.
 	self assertIsNegativeZero: Float fmin negated / 4.0.
 	self assertIsPositiveZero: Float fmin negated / -4.0.! !
+
+!FloatTest methodsFor: 'tests - zero behavior' stamp: 'sd 6/5/2005 08:33'!
+testZero1
+	"FloatTest new testZero1"
+
+	self assert: Float negativeZero = 0 asFloat.
+	self assert: (Float negativeZero at: 1) ~= (0 asFloat at: 1).
+
+	"The negative zero has a bit representation that is different from the bit representation of the positive zero. Nevertheless, both values are defined to be equal."
+! !
 
 !FloatTest methodsFor: 'tests - zero behavior' stamp: 'jmv 4/4/2019 14:32:48'!
 testZeroAbs
@@ -4880,6 +4911,17 @@ testPrimTruncated
 		ifFalse: [ self assert: SmallInteger minVal asFloat primTestTruncated = #fail ].
 ! !
 
+!FloatTest methodsFor: 'tests - characterization' stamp: 'nice 3/4/2021 22:34'!
+testIsFinite
+	self assert: Float fminDenormalized isFinite.
+	self assert: 0.0 isFinite.
+	self assert: Float pi negated isFinite.
+	self assert: Float fmax isFinite.
+	
+	self deny: Float infinity isFinite.
+	self deny: Float negativeInfinity isFinite.
+	self deny: Float nan isFinite.! !
+
 !FractionTest methodsFor: 'private' stamp: 'jmv 10/11/2011 22:12'!
 assert: a classAndValueEquals: b
 	self assert: a class = b class.
@@ -5037,6 +5079,42 @@ testLog
 testNthRoot
 	self assert: ((-2 raisedTo: 35) / (3 raisedTo: 20) raisedTo: 1/5) equals: (-2 raisedTo: 7) / (3 raisedTo: 4).
 	self assert: (1 / (1 << 2000) raisedTo: 1/100) equals: 1 / (1 << 20)! !
+
+!FractionTest methodsFor: 'tests - mathematical functions' stamp: 'jmv 5/24/2024 15:16:15'!
+testSinCosForHugeValues1
+	| bigNum equivalentFloatInTwoPiRange |
+
+	bigNum := 1e22 + (10202/10000).
+	equivalentFloatInTwoPiRange := 0.0.
+	self assert: (bigNum sin squared + bigNum cos squared isWithin: 2 floatsFrom: 1.0).
+	self assert: (bigNum sin - equivalentFloatInTwoPiRange sin) abs < 1e-4.
+	self assert: (bigNum cos -equivalentFloatInTwoPiRange cos) abs < 1e-4.
+
+	1 to: 10 do: [	 :i |
+		bigNum := 1e22 + (10202/10000) + i.
+		equivalentFloatInTwoPiRange := 0.0 + i.
+		self assert: (bigNum sin squared + bigNum cos squared isWithin: 4 floatsFrom: 1.0).
+		self assert: (bigNum sin - equivalentFloatInTwoPiRange sin) abs < 1e-4.
+		self assert: (bigNum cos -equivalentFloatInTwoPiRange cos) abs < 1e-4 ].
+! !
+
+!FractionTest methodsFor: 'tests - mathematical functions' stamp: 'jmv 5/24/2024 15:17:54'!
+testSinCosForHugeValues2
+	| bigNum equivalentFloatInTwoPiRange |
+
+	bigNum := 1e500 - (282532 / 100000).
+	equivalentFloatInTwoPiRange := 0.0.
+	self assert: (bigNum sin squared + bigNum cos squared isWithin: 2 floatsFrom: 1.0).
+	self assert: (bigNum sin - equivalentFloatInTwoPiRange sin) abs < 1e-4.
+	self assert: (bigNum cos -equivalentFloatInTwoPiRange cos) abs < 1e-4.
+
+	1 to: 10 do: [	 :i |
+		bigNum := 1e500 - (282532 / 100000) + i.
+		equivalentFloatInTwoPiRange := 0.0 + i.
+		self assert: (bigNum sin squared + bigNum cos squared isWithin: 4 floatsFrom: 1.0).
+		self assert: (bigNum sin - equivalentFloatInTwoPiRange sin) abs < 1e-4.
+		self assert: (bigNum cos -equivalentFloatInTwoPiRange cos) abs < 1e-4 ].
+! !
 
 !FractionTest methodsFor: 'tests - printing' stamp: 'nice 7/24/2010 18:43'!
 testFractionPrinting
@@ -5480,6 +5558,25 @@ testBackslashBackslashSpSp
 	self assert: 12 \\ 3 = 0.
 	self assert: 13 \\ 3 = 1! !
 
+!IntegerTest methodsFor: 'tests - division - \\' stamp: 'jmv 5/24/2024 14:55:26'!
+testModuloTwoPiAsFloat
+
+	| k |
+	k := 1e22.
+	self assert: k moduloTwoPiAsFloat + 1 = 	(k+1) moduloTwoPiAsFloat.
+	k negated moduloTwoPiAsFloat + 1 = 	(k negated+1) moduloTwoPiAsFloat.
+	k moduloTwoPiAsFloat + k negated moduloTwoPiAsFloat = Float twoPi.
+	(k+1) moduloTwoPiAsFloat + (k negated-1) moduloTwoPiAsFloat = Float twoPi.
+	(k-1) moduloTwoPiAsFloat + (k negated+1) moduloTwoPiAsFloat = Float twoPi.
+
+	k := 1e500.
+	self assert: k moduloTwoPiAsFloat + 1 = 	(k+1) moduloTwoPiAsFloat.
+	k negated moduloTwoPiAsFloat + 1 = 	(k negated+1) moduloTwoPiAsFloat.
+	k moduloTwoPiAsFloat + k negated moduloTwoPiAsFloat = Float twoPi.
+	(k+1) moduloTwoPiAsFloat + (k negated-1) moduloTwoPiAsFloat = Float twoPi.
+	(k-1) moduloTwoPiAsFloat + (k negated+1) moduloTwoPiAsFloat = Float twoPi.
+! !
+
 !IntegerTest methodsFor: 'tests - benchmarks' stamp: 'sd 6/5/2005 08:37'!
 testBenchFib
 
@@ -5642,6 +5739,17 @@ testNthRootExactness
 	inexactRoots := largeRaisedTo6 reject: [:e | (e nthRoot: 6) isInteger].
 	self assert: inexactRoots isEmpty description: 'Failed to find the exact 6th root of these numbers'! !
 
+!IntegerTest methodsFor: 'tests - mathematical functions' stamp: 'nice 5/4/2019 00:30'!
+testNthRootRounded
+	<timeout:  5 "seconds">
+	| d x |
+	d := ((1 + 2 reciprocal - (1<<30) reciprocal) raisedTo: 1000) floor. "close to 1.5 by default"
+	x := ((1 + 2 reciprocal + (1<<30) reciprocal) raisedTo: 1000) ceiling. "close to 1.5 by excess"
+	self assert: (d nthRootTruncated: 1000) equals: 1.
+	self assert: (x nthRootTruncated: 1000) equals: 1.
+	self assert: (d nthRootRounded: 1000) equals: 1.
+	self assert: (x nthRootRounded: 1000) equals: 2.! !
+
 !IntegerTest methodsFor: 'tests - mathematical functions' stamp: 'nice 10/19/2011 21:03'!
 testNthRootTruncated
 	<timeout:  5 "seconds">
@@ -5662,6 +5770,30 @@ testNthRootTruncated
 			theTruncatedRoot := n nthRootTruncated: thePower.
 			self assert: (theTruncatedRoot raisedTo: thePower) <= n.
 			self assert: (theTruncatedRoot + 1 raisedTo: thePower) > n]]! !
+
+!IntegerTest methodsFor: 'tests - mathematical functions' stamp: 'dtl 5/12/2024 09:35'!
+testSinCosConsistency
+	"sin and cos are tricky on very large numbers. Check for correct behavior."
+
+	"Angles within a reasonable range"
+	-1234567 to: 123456789 by: 113*100 do: [:angle | | hypotenuse diff |
+		hypotenuse := (angle sin squared + angle cos squared) sqrt.
+		diff := (1 - hypotenuse) abs.
+		self assert: diff < 0.00001].
+
+	"Large magnitude angles. results should be consistent"
+	(1 to: 1000) inject: (2 raisedToInteger: 122) into: [ :angle :i | | hypotenuse diff |
+		hypotenuse := (angle sin squared + angle cos squared) sqrt.
+		diff := (1 - hypotenuse) abs.
+		self assert: diff < 0.00001.
+		angle asFloat successor asInteger].
+
+	"Large negative angle magnitudes"
+	(1 to: 1000) inject: (2 raisedToInteger: 122) negated into: [ :angle :i | | hypotenuse diff |
+		hypotenuse := (angle sin squared + angle cos squared) sqrt.
+		diff := (1 - hypotenuse) abs.
+		self assert: diff < 0.00001.
+		angle asFloat predecessor asInteger].! !
 
 !IntegerTest methodsFor: 'tests - mathematical functions' stamp: 'ul 11/25/2009 03:01'!
 testSqrtFloor
@@ -5925,10 +6057,10 @@ testIsInteger
 	self assert: (10000 is: #Integer).
 	self assert: (10000 is: #Number).! !
 
-!IntegerTest methodsFor: 'tests - basic' stamp: 'md 4/15/2003 20:40'!
+!IntegerTest methodsFor: 'tests - basic' stamp: 'jmv 5/24/2024 14:25:05'!
 testIsPowerOfTwo
 
-	self assert: (0 isPowerOfTwo).
+	self deny: (0 isPowerOfTwo).
 	self assert: (1 isPowerOfTwo).
 	self assert: (2 isPowerOfTwo).
 	self deny:  (3 isPowerOfTwo).
@@ -6934,6 +7066,42 @@ self new testNthRootImmuneToDoubleRounding
          highPrecisionRoot := (crafted << (exponent squared * Float precision * 4) nthRootRounded: exponent) / (1 << (exponent * Float precision * 4)).
          self assert: (root asFraction - highPrecisionRoot) abs < (root successor asFraction - highPrecisionRoot) abs.! !
 
+!IntegerTest methodsFor: 'mathematical functions' stamp: 'jmv 5/24/2024 15:14:56'!
+testSinCosForHugeValues1
+	| bigNum equivalentFloatInTwoPiRange |
+
+	bigNum := 1e22.
+	equivalentFloatInTwoPiRange := Float twoPi - (10202/10000).
+	self assert: (bigNum sin squared + bigNum cos squared isWithin: 2 floatsFrom: 1.0).
+	self assert: (bigNum sin - equivalentFloatInTwoPiRange sin) abs < 1e-4.
+	self assert: (bigNum cos -equivalentFloatInTwoPiRange cos) abs < 1e-4.
+
+	1 to: 10 do: [	 :i |
+		bigNum := 1e22 + i.
+		equivalentFloatInTwoPiRange := Float twoPi - (10202/10000) + i.
+		self assert: (bigNum sin squared + bigNum cos squared isWithin: 4 floatsFrom: 1.0).
+		self assert: (bigNum sin - equivalentFloatInTwoPiRange sin) abs < 1e-4.
+		self assert: (bigNum cos -equivalentFloatInTwoPiRange cos) abs < 1e-4 ].
+! !
+
+!IntegerTest methodsFor: 'mathematical functions' stamp: 'jmv 5/24/2024 15:14:48'!
+testSinCosForHugeValues2
+	| bigNum equivalentFloatInTwoPiRange |
+
+	bigNum := 1e500.
+	equivalentFloatInTwoPiRange := Float twoPi + (282532 / 100000).
+	self assert: (bigNum sin squared + bigNum cos squared isWithin: 2 floatsFrom: 1.0).
+	self assert: (bigNum sin - equivalentFloatInTwoPiRange sin) abs < 1e-4.
+	self assert: (bigNum cos -equivalentFloatInTwoPiRange cos) abs < 1e-4.
+
+	1 to: 10 do: [	 :i |
+		bigNum := 1e500 + i.
+		equivalentFloatInTwoPiRange := Float twoPi + (282532 / 100000) + i.
+		self assert: (bigNum sin squared + bigNum cos squared isWithin: 4 floatsFrom: 1.0).
+		self assert: (bigNum sin - equivalentFloatInTwoPiRange sin) abs < 1e-4.
+		self assert: (bigNum cos -equivalentFloatInTwoPiRange cos) abs < 1e-4 ].
+! !
+
 !IntegerTest methodsFor: 'tests - division - quo:' stamp: 'sqr 1/25/2014 14:36'!
 testQuoLnLn
 
@@ -7433,6 +7601,17 @@ testLCMProperties
 	self assert: (0 lcm: a) = 0.
 	self assert: (0 lcm: 0) = 0! !
 
+!IntegerTest methodsFor: 'tests - arithmetic' stamp: 'jmv 5/24/2024 12:35:17'!
+testReciprocalModulo
+	1 to: 512 do: [:a |
+		a + 1 to: 512 do: [:b |
+			| c |
+			(a gcd: b) = 1
+				ifTrue:
+					[c := a reciprocalModulo: b.
+					self assert: (a * c) \\ b = 1]
+				ifFalse: [self assert: ( a reciprocalModulo: b ) isNil]]].! !
+
 !LargeNegativeIntegerTest methodsFor: 'tests' stamp: 'ul 11/15/2010 11:51'!
 testDenormalizedPrintString
 	"Check that an un-normalized instance behaves reasonably."
@@ -7659,6 +7838,15 @@ test_raisedTo_modulo
 	self assert: (5445648384 raisedTo: 3 modulo: 1 << 34) = 0.
 	self assert: (5445648384 raisedTo: 4 modulo: 1 << 34) = 0.! !
 
+!LargePositiveIntegerTest methodsFor: 'tests - mathematical functions' stamp: 'nice 5/13/2019 13:56'!
+testSqrt
+	self assert: (SmallInteger maxVal + 1) sqrt equals: (SmallInteger maxVal + 1) asFloat sqrt.! !
+
+!NumberTest methodsFor: 'tests' stamp: 'nice 3/4/2021 21:14'!
+testExactLog2
+	-10 to: 10 do: [:i | self assert: i equals: (2 raisedToInteger: i) log2].
+	Float emin - Float precision + 1 to: Float emax do: [:i | self assert: i equals: (1.0 timesTwoPower: i) log2].! !
+
 !NumberTest methodsFor: 'tests' stamp: 'GabrielOmarCotelli 5/26/2009 21:57'!
 testFractionPart
 
@@ -7748,6 +7936,17 @@ testIntegerPart
 		assert: 0.5 integerPart = 0.0;
 		assert: 2.5 integerPart = 2.0
 ! !
+
+!NumberTest methodsFor: 'tests' stamp: 'nice 3/4/2021 21:13'!
+testLog2doesNotOverflow
+	"Note: though this is not a strict identity, we can use strict Float equality here"
+	self assert: 3000.0 equals: ((1 bitShift: 3000) - 1) log2.
+	self assert: 1500.0 equals: (((1 bitShift: 3000) - 1) / (1 bitShift: 1500)) log2.! !
+
+!NumberTest methodsFor: 'tests' stamp: 'nice 3/4/2021 21:13'!
+testLog2doesNotUnderflow
+	"Note: though this is not a strict identity, we can use strict Float equality here"
+	self assert: -2000.0 equals: ((1 bitShift: 2000) - 1) reciprocal log2! !
 
 !NumberTest methodsFor: 'tests' stamp: 'GabrielOmarCotelli 5/23/2009 20:49'!
 testOne
@@ -8105,6 +8304,56 @@ testZeroRaisedToNegativePower
 	self should: [-0 raisedToInteger: -1] raise: ZeroDivide.
 	self should: [-0 raisedTo: -1] raise: ZeroDivide.
 	self should: [-0 raisedTo: -1.0] raise: ZeroDivide.! !
+
+!SmallIntegerTest methodsFor: 'tests - printing' stamp: 'jmv 5/24/2024 11:13:21'!
+testDecimalDigitLength
+
+	| x length random |
+	"Test edge cases"
+	x := 1.
+	length := 1.
+	[ x <= SmallInteger maxVal ] whileTrue: [
+		self 
+			assert: length equals: x decimalDigitLength;
+			assert: (length - 1 max: 1) equals: (x - 1) decimalDigitLength.
+		x := x * 10.
+		length := length + 1 ].
+	"A few values by hand"
+	#(
+		0 1
+		4 1
+		12 2
+		123 3
+		1234 4
+		56789 5
+		657483 6
+		6571483 7
+		65174383 8
+		625744831 9
+		1000001111 10
+	), {
+		SmallInteger maxVal. Smalltalk wordSize = 8 ifTrue: [ 19 ] ifFalse: [ 10 ]
+	}pairsDo: [ :input :expectedOutput |
+		self assert: expectedOutput equals: input decimalDigitLength ].
+	"Pseudorandom tests."
+	random := Random seed: 36rSQUEAK.
+	10000 timesRepeat: [
+		x := SmallInteger maxVal atRandom: random.
+		self assert: x asString size equals: x decimalDigitLength ]! !
+
+!SmallIntegerTest methodsFor: 'tests - arithmetic' stamp: 'nice 8/21/2019 02:55'!
+testDivideMayOverflow
+	"Dividing a SmallInteger by another Integer may answer a Large Integer.
+	These cases have caused several VM bugs in the past, it's better to keep some assrtion around."
+	
+	self assert: (SmallInteger minVal / -1) isLarge.
+	self assert: (SmallInteger minVal / -1) = (SmallInteger maxVal + 1).
+	
+	self assert: (SmallInteger minVal quo: -1) isLarge.
+	self assert: (SmallInteger minVal quo: -1) = (SmallInteger maxVal + 1).
+	
+	self assert: (SmallInteger minVal // -1) isLarge.
+	self assert: (SmallInteger minVal // -1) = (SmallInteger maxVal + 1).! !
 
 !RandomTest methodsFor: 'setup' stamp: 'sqr 3/5/2016 18:33'!
 byteBitCounts
@@ -19691,14 +19940,14 @@ testSourcesFileAddressRange
 
 ! !
 
-!StandardFileStreamTest methodsFor: 'tests' stamp: 'NM 10/25/2021 10:15:22'!
+!FileStreamTest methodsFor: 'tests' stamp: 'jmv 5/19/2024 20:09:27'!
 testUpTo1ShortRecords
 	". this test ensures the upTo: delim method behaves as specified by the ANSI standard:
 	Delimiter is considered a separator (and therefore not required for the last chunk)."
-	|path fs|
-	path _ 'test-{1}.txt' format: {(Float pi * 10e10) floor. } .
+	| path fs |
+	path := 'test-{1}.txt' format: {(Float pi * 10e10) floor atRandom. }.
 	path asFileEntry fileContents: 'record-1Xrecord-2Xrecord-incomplete'. 
-	fs _ path asFileEntry readStream . 
+	fs := path asFileEntry readStream . 
 	self assert:  ((fs upTo: $X) =  'record-1').
 	self assert:  ((fs upTo: $X) =  'record-2').
 	self assert:  ((fs upTo: $X) =  'record-incomplete').
@@ -19710,7 +19959,7 @@ testUpTo1ShortRecords
 
 	! !
 
-!StandardFileStreamTest methodsFor: 'tests' stamp: 'NM 10/25/2021 10:14:45'!
+!FileStreamTest methodsFor: 'tests' stamp: 'jmv 5/19/2024 20:08:32'!
 testUpTo2IncompleteRecords
 	"
 	. This test stresses the motivation for introducing upTo:delimiterIsTerminator:
@@ -19718,11 +19967,11 @@ testUpTo2IncompleteRecords
 	upTo can potentially create a bit a of a mess by reading in half records and complete records.
 	. please compare to the equivalent testUpToTerminatorX to see what is probably the behaviour your are looking for 
 	"
-	|path fs|
-	path _ 'test-{1}.txt' format: {(Float pi * 10e10) floor. } .
+	| path fs |
+	path := 'test-{1}.txt' format: {(Float pi * 10e10) floor atRandom. } .
 	" a process starts to write data into a file but it does not end cleanly the writing "
 	path asFileEntry fileContents: 'record-1Xrec'. 
-	fs _ path asFileEntry readStream . 
+	fs := path asFileEntry readStream . 
 	" upTo reads 'record-1' and the second time reads half a token "
 	self assert:  ((fs upTo: $X) =  'record-1').
 	self assert:  ((fs upTo: $X) =  'rec').
@@ -19738,88 +19987,111 @@ testUpTo2IncompleteRecords
 
 	! !
 
-!StandardFileStreamTest methodsFor: 'tests' stamp: 'NM 10/25/2021 11:01:55'!
+!FileStreamTest methodsFor: 'tests' stamp: 'jmv 5/19/2024 20:09:35'!
 testUpTo3LongUnterminatedRecord
-    "Long input, no delimiter found, expected to return all the data chunk up to the end of file. "
-    | path longString fs read |
-    path := 'test-{1}.txt' format: {(Float pi * 10e10) floor. } .
-    longString _ ((1 to: 100) inject: '' into: [ :prev :each | prev, 'A lot of stuff, needs over 2000 chars!! ']).
-    path asFileEntry fileContents: longString . 
-    fs := path asFileEntry readStream.
-    read := fs upTo: $X.
-    self assert: (read =  longString ).
-    fs close.
-    path asFileEntry delete.! !
+	"Long input, no delimiter found, expected to return all the data chunk up to the end of file. "
+	| path longString fs read |
+	path := 'test-{1}.txt' format: {(Float pi * 10e10) floor atRandom. }.
+	longString := (1 to: 100)
+		inject: ''
+		into: [ :prev :each |
+			prev , 'A lot of stuff, needs over 2000 chars!! ' ].
+	path asFileEntry fileContents: longString.
+	fs := path asFileEntry readStream.
+	read := fs upTo: $X.
+	self assert: read = longString.
+	fs close.
+	path asFileEntry delete.! !
 
-!StandardFileStreamTest methodsFor: 'tests' stamp: 'NM 10/25/2021 11:02:02'!
+!FileStreamTest methodsFor: 'tests' stamp: 'jmv 5/19/2024 20:10:50'!
 testUpTo4LongUnterminatedRecord
-    "Big chunk, not delimiter found, expected return all the chunk  "
-    | path fs read |
-    path := 'test-{1}.txt' format: {(Float pi * 10e10) floor. } .
-    fs _ path asFileEntry forceWriteStream .
-    1 to: 5000 do: [ :i  | 
-	(i < 3000) ifTrue: [ fs nextPut: $a ].
-	(i >= 3000) ifTrue: [ fs nextPut: $b ]. 
-	].
-    fs close. 
-    fs := path asFileEntry readStream.
-    read := fs upTo: $X.
-    self assert: (read size = 5000).     
-    fs close.
-    path asFileEntry delete.! !
+	"Big chunk, not delimiter found, expected return all the chunk  "
+	| path fs read |
+	path := 'test-{1}.txt' format:
+		{(Float pi * 100000000000) floor atRandom}.
+	fs := path asFileEntry forceWriteStream.
+	1
+		to: 5000
+		do: [ :i |
+			i < 3000 ifTrue: [ fs nextPut: $a ].
+			i >= 3000 ifTrue: [ fs nextPut: $b ]].
+	fs close.
+	fs := path asFileEntry readStream.
+	read := fs upTo: $X.
+	self assert: read size = 5000.
+	fs close.
+	path asFileEntry delete.! !
 
-!StandardFileStreamTest methodsFor: 'tests' stamp: 'NM 10/25/2021 11:02:08'!
+!FileStreamTest methodsFor: 'tests' stamp: 'jmv 5/19/2024 20:11:05'!
 testUpTo5TerminatedAndUnterminatedLongRecords
-    "Two big chunks, one delimiter in the middle, expected to return 
+	"Two big chunks, one delimiter in the middle, expected to return 
       the first time a big chunk, the second time the second block up to EOF.  "
-    | path fs read |
-    path := 'test-{1}.txt' format: {(Float pi * 10e10) floor. } .
-    fs _ path asFileEntry forceWriteStream .
-    1 to: 6000 do: [ :i  | 
-	(i < 3000) ifTrue: [ fs nextPut: $a ].
-	(i = 3000) ifTrue: [ fs nextPut: $X ]. 
-	(i > 3000) ifTrue: [ fs nextPut: $b ]. 
-	].
-    fs close. 
-    fs := path asFileEntry readStream.
-    " first scan, the delimiter is found but not printed.  "
-    read := fs upTo: $X.
-    self assert: (read size =  2999).    
-    self assert: ((read at: 1) = $a).  
-    " second scan. the delimiter is not found, all second chunk is returned  "
-    read := fs upTo: $X. 
-    self assert: (read size = 3000).    
-    self assert: (read at: 1) = $b.    
-    fs close.
-    path asFileEntry delete.! !
+	| path fs read |
+	path := 'test-{1}.txt' format:
+		{(Float pi * 100000000000) floor atRandom}.
+	fs := path asFileEntry forceWriteStream.
+	1
+		to: 6000
+		do: [ :i |
+			i < 3000 ifTrue: [ fs nextPut: $a ].
+			i = 3000 ifTrue: [ fs nextPut: $X ].
+			i > 3000 ifTrue: [ fs nextPut: $b ]].
+	fs close.
+	fs := path asFileEntry readStream.
+	" first scan, the delimiter is found but not printed.  "
+	read := fs upTo: $X.
+	self assert: read size = 2999.
+	self assert: (read at: 1) = $a.
+	" second scan. the delimiter is not found, all second chunk is returned  "
+	read := fs upTo: $X.
+	self assert: read size = 3000.
+	self assert: (read at: 1) = $b.
+	fs close.
+	path asFileEntry delete.! !
 
-!StandardFileStreamTest methodsFor: 'tests' stamp: 'NM 10/25/2021 11:02:13'!
+!FileStreamTest methodsFor: 'tests' stamp: 'jmv 5/19/2024 20:11:11'!
 testUpTo6TerminatedLongRecords
-    "Two big chunks, one delimiter in the middle, one at the end. expected to return 
+	"Two big chunks, one delimiter in the middle, one at the end. expected to return 
       two big chunks in two read, delimiters excluded.  "
-    | path fs read |
-    path := 'test-{1}.txt' format: {(Float pi * 10e10) floor. } .
-    fs _ path asFileEntry forceWriteStream .
-    1 to: 6000 do: [ :i  | 
-	(i < 3000) ifTrue: [ fs nextPut: $a ].
-	(i = 3000) ifTrue: [ fs nextPut: $X ]. 
-	((Interval from: 3001 to: 5999) includes: i) ifTrue: [ fs nextPut: $b ]. 
-	(i = 6000) ifTrue: [ fs nextPut: $X ] .
-	].
-    fs close. 
-    fs := path asFileEntry readStream.
-    " first scan, delimiter is found, return all the block delimiter excluded "
-    read := fs upTo: $X.
-    self assert: (read size =  2999).    
-    self assert: ((read at: 1) = $a).   
-    " second scan, return chunk, delimiter excluded.  "
-    read := fs upTo: $X. 
-    self assert: (read size = 2999).
-    self assert: ((read at: 1) = $b).      
-    fs close.
-    path asFileEntry delete.! !
+	| path fs read |
+	path := 'test-{1}.txt' format:
+		{(Float pi * 100000000000) floor atRandom}.
+	fs := path asFileEntry forceWriteStream.
+	1
+		to: 6000
+		do: [ :i |
+			i < 3000 ifTrue: [ fs nextPut: $a ].
+			i = 3000 ifTrue: [ fs nextPut: $X ].
+			((Interval
+				from: 3001
+				to: 5999) includes: i) ifTrue: [ fs nextPut: $b ].
+			i = 6000 ifTrue: [ fs nextPut: $X ]].
+	fs close.
+	fs := path asFileEntry readStream.
+	" first scan, delimiter is found, return all the block delimiter excluded "
+	read := fs upTo: $X.
+	self assert: read size = 2999.
+	self assert: (read at: 1) = $a.
+	" second scan, return chunk, delimiter excluded.  "
+	read := fs upTo: $X.
+	self assert: read size = 2999.
+	self assert: (read at: 1) = $b.
+	fs close.
+	path asFileEntry delete.! !
 
-!StandardFileStreamTest methodsFor: 'tests' stamp: 'NM 10/25/2021 10:17:41'!
+!FileStreamTest methodsFor: 'tests' stamp: 'jmv 5/19/2024 20:14:02'!
+testUpToAll
+	| string path fromFile fromString |
+	path := 'test-{1}.txt' format: {(Float pi * 10e10) floor atRandom. } .
+	string := UnicodeString fromUtf8Bytes: #[57 57 194 160 226 130 172].
+	DirectoryEntry userBaseDirectory at: path put: string.
+	self assert: ((DirectoryEntry userBaseDirectory at: path) = string).
+	fromString := string readStream upToAll: (string copyFrom: 3 to: 4).
+	fromFile := (DirectoryEntry userBaseDirectory // path) readStream upToAll: (string copyFrom: 3 to: 4).
+	self assert: fromFile = fromString.
+	path asFileEntry delete.! !
+
+!FileStreamTest methodsFor: 'tests' stamp: 'jmv 5/19/2024 20:10:00'!
 testUpToTerminator1ShortRecords
 	"
 	. Read a file stream up to 'delim' in a strict way. 
@@ -19829,10 +20101,10 @@ testUpToTerminator1ShortRecords
 	limited token we will fully read it on next upTo call.
 	This means Delimiter is a Terminator: a chunk is only considered well formed if it ends with it.
 	"
-	|path fs|
-	path _ 'test-{1}.txt' format: {(Float pi * 10e10) floor. } .
+	| path fs |
+	path := 'test-{1}.txt' format: {(Float pi * 10e10) floor atRandom. }.
 	path asFileEntry fileContents: 'record-1Xrecord-2Xrecord-incomplete'. 
-	fs _ path asFileEntry readStream . 
+	fs := path asFileEntry readStream . 
 	self assert:  ((fs upTo: $X delimiterIsTerminator: true) =  'record-1X').
 	self assert:  ((fs upTo: $X delimiterIsTerminator: true) =  'record-2X').
 	self assert:  ((fs upTo: $X delimiterIsTerminator: true) =  nil).
@@ -19844,7 +20116,7 @@ testUpToTerminator1ShortRecords
 	path asFileEntry delete .
 	! !
 
-!StandardFileStreamTest methodsFor: 'tests' stamp: 'NM 10/25/2021 10:18:12'!
+!FileStreamTest methodsFor: 'tests' stamp: 'jmv 5/19/2024 20:10:04'!
 testUpToTerminator2IncompleteRecords
 	"
 	. This test stresses the motivation for introducing upTo:delimiterIsTerminator: 
@@ -19852,10 +20124,10 @@ testUpToTerminator2IncompleteRecords
 	upTo:delimiterIsTerminator:true will not loose any token and will never return half written tokens.
 	"
 	|path fs|
-	path _ 'test-{1}.txt' format: {(Float pi * 10e10) floor. } .
+	path := 'test-{1}.txt' format: {(Float pi * 10e10) floor atRandom. }.
 	" a process starts to write data into a file but it does not end cleanly the writing "
 	path asFileEntry fileContents: 'record-1Xrec'. 
-	fs _ path asFileEntry readStream . 
+	fs := path asFileEntry readStream . 
 	" upTo:strict reads upto what it can find and ignores the rest "
 	self assert:  ((fs upTo: $X delimiterIsTerminator: true) =  'record-1X').
 	self assert:  ((fs upTo: $X delimiterIsTerminator: true) =  nil).
@@ -19870,84 +20142,109 @@ testUpToTerminator2IncompleteRecords
 
 	! !
 
-!StandardFileStreamTest methodsFor: 'tests' stamp: 'jmv 10/25/2021 10:12:02'!
+!FileStreamTest methodsFor: 'tests' stamp: 'jmv 5/19/2024 20:11:29'!
 testUpToTerminator3LongUnterminatedRecord
-    "Long input, no delimiter found, expected to return nil. "
-    | path fs read |
-    path := 'test-{1}.txt' format: {(Float pi * 10e10) floor. } .
-    path asFileEntry fileContents: ((1 to: 100) inject: '' into: [ :prev :each | prev, 'A lot of stuff, needs over 2000 chars!! ']).
-    fs := path asFileEntry readStream.
-    read := fs upTo: $X delimiterIsTerminator: true.
-    self assert: (read =  nil).
-    fs close.
-    path asFileEntry delete.! !
+	"Long input, no delimiter found, expected to return nil. "
+	| path fs read |
+	path := 'test-{1}.txt' format:
+		{(Float pi * 100000000000) floor atRandom}.
+	path asFileEntry fileContents:
+		((1 to: 100)
+			inject: ''
+			into: [ :prev :each |
+				prev , 'A lot of stuff, needs over 2000 chars!! ' ]).
+	fs := path asFileEntry readStream.
+	read := fs
+		upTo: $X
+		delimiterIsTerminator: true.
+	self assert: read = nil.
+	fs close.
+	path asFileEntry delete.! !
 
-!StandardFileStreamTest methodsFor: 'tests' stamp: 'jmv 10/25/2021 10:12:08'!
+!FileStreamTest methodsFor: 'tests' stamp: 'jmv 5/19/2024 20:11:35'!
 testUpToTerminator4LongUnterminatedRecord
-    "Big chunk, not delimiter found, expected return nil  "
-    | path fs read |
-    path := 'test-{1}.txt' format: {(Float pi * 10e10) floor. } .
-    fs _ path asFileEntry forceWriteStream .
-    1 to: 5000 do: [ :i  | 
-	(i < 3000) ifTrue: [ fs nextPut: $a ].
-	(i >= 3000) ifTrue: [ fs nextPut: $b ]. 
-	].
-    fs close. 
-    fs := path asFileEntry readStream.
-    read := fs upTo: $X delimiterIsTerminator: true.
-    self assert: (read =  nil).     
-    fs close.
-    path asFileEntry delete.! !
+	"Big chunk, not delimiter found, expected return nil  "
+	| path fs read |
+	path := 'test-{1}.txt' format:
+		{(Float pi * 100000000000) floor atRandom}.
+	fs := path asFileEntry forceWriteStream.
+	1
+		to: 5000
+		do: [ :i |
+			i < 3000 ifTrue: [ fs nextPut: $a ].
+			i >= 3000 ifTrue: [ fs nextPut: $b ]].
+	fs close.
+	fs := path asFileEntry readStream.
+	read := fs
+		upTo: $X
+		delimiterIsTerminator: true.
+	self assert: read = nil.
+	fs close.
+	path asFileEntry delete.! !
 
-!StandardFileStreamTest methodsFor: 'tests' stamp: 'jmv 10/25/2021 10:12:14'!
+!FileStreamTest methodsFor: 'tests' stamp: 'jmv 5/19/2024 20:11:43'!
 testUpToTerminator5TerminatedAndUnterminatedLongRecords
-    "Two big chunks, one delimiter in the middle, expected to return 
+	"Two big chunks, one delimiter in the middle, expected to return 
       the first time a big chunk, the second time nil.  "
-    | path fs read |
-    path := 'test-{1}.txt' format: {(Float pi * 10e10) floor. } .
-    fs _ path asFileEntry forceWriteStream .
-    1 to: 6000 do: [ :i  | 
-	(i < 3000) ifTrue: [ fs nextPut: $a ].
-	(i = 3000) ifTrue: [ fs nextPut: $X ]. 
-	(i > 3000) ifTrue: [ fs nextPut: $b ]. 
-	].
-    fs close. 
-    fs := path asFileEntry readStream.
-    " first scan, delimiter is found, return all the block delimiter included "
-    read := fs upTo: $X delimiterIsTerminator: true.
-    self assert: (read size =  3000).    
-    self assert: ((read at: 1) = $a).   
-    " second scan, delimiter not found, returns nil  "
-    read := fs upTo: $X delimiterIsTerminator: true.
-    self assert: (read = nil).    
-    fs close.
-    path asFileEntry delete.! !
+	| path fs read |
+	path := 'test-{1}.txt' format:
+		{(Float pi * 100000000000) floor atRandom}.
+	fs := path asFileEntry forceWriteStream.
+	1
+		to: 6000
+		do: [ :i |
+			i < 3000 ifTrue: [ fs nextPut: $a ].
+			i = 3000 ifTrue: [ fs nextPut: $X ].
+			i > 3000 ifTrue: [ fs nextPut: $b ]].
+	fs close.
+	fs := path asFileEntry readStream.
+	" first scan, delimiter is found, return all the block delimiter included "
+	read := fs
+		upTo: $X
+		delimiterIsTerminator: true.
+	self assert: read size = 3000.
+	self assert: (read at: 1) = $a.
+	" second scan, delimiter not found, returns nil  "
+	read := fs
+		upTo: $X
+		delimiterIsTerminator: true.
+	self assert: read = nil.
+	fs close.
+	path asFileEntry delete.! !
 
-!StandardFileStreamTest methodsFor: 'tests' stamp: 'jmv 10/25/2021 10:12:22'!
+!FileStreamTest methodsFor: 'tests' stamp: 'jmv 5/19/2024 20:11:49'!
 testUpToTerminator6TerminatedLongRecords
-    "Two big chunks, one delimiter in the middle, one at the end expected to return 
+	"Two big chunks, one delimiter in the middle, one at the end expected to return 
       two big chunks in two read, delimiters included.  "
-    | path fs read |
-    path := 'test-{1}.txt' format: {(Float pi * 10e10) floor. } .
-    fs _ path asFileEntry forceWriteStream .
-    1 to: 6000 do: [ :i  | 
-	(i < 3000) ifTrue: [ fs nextPut: $a ].
-	(i = 3000) ifTrue: [ fs nextPut: $X ]. 
-	((Interval from: 3001 to: 5999) includes: i) ifTrue: [ fs nextPut: $b ]. 
-	(i = 6000) ifTrue: [ fs nextPut: $X ] .
-	].
-    fs close. 
-    fs := path asFileEntry readStream.
-    " first scan, delimiter is found, return all the block delimiter included "
-    read := fs upTo: $X delimiterIsTerminator: true.
-    self assert: (read size =  3000).    
-    self assert: ((read at: 1) = $a).   
-    " second scan, delimiter found, return chunk, delimiter included   "
-    read := fs upTo: $X delimiterIsTerminator: true.
-    self assert: (read size = 3000).
-    self assert: ((read at: 1) = $b).      
-    fs close.
-    path asFileEntry delete.! !
+	| path fs read |
+	path := 'test-{1}.txt' format:
+		{(Float pi * 100000000000) floor atRandom}.
+	fs := path asFileEntry forceWriteStream.
+	1
+		to: 6000
+		do: [ :i |
+			i < 3000 ifTrue: [ fs nextPut: $a ].
+			i = 3000 ifTrue: [ fs nextPut: $X ].
+			((Interval
+				from: 3001
+				to: 5999) includes: i) ifTrue: [ fs nextPut: $b ].
+			i = 6000 ifTrue: [ fs nextPut: $X ]].
+	fs close.
+	fs := path asFileEntry readStream.
+	" first scan, delimiter is found, return all the block delimiter included "
+	read := fs
+		upTo: $X
+		delimiterIsTerminator: true.
+	self assert: read size = 3000.
+	self assert: (read at: 1) = $a.
+	" second scan, delimiter found, return chunk, delimiter included   "
+	read := fs
+		upTo: $X
+		delimiterIsTerminator: true.
+	self assert: read size = 3000.
+	self assert: (read at: 1) = $b.
+	fs close.
+	path asFileEntry delete.! !
 
 !ReferenceStreamTest methodsFor: 'testing' stamp: 'jmv 9/25/2012 22:42'!
 testDiskProxy
@@ -23806,6 +24103,31 @@ unusedVariableSource
 	^ 'griffle 
 		| goo |
 		^ nil'! !
+
+!SystemOrganizerTest methodsFor: 'testing' stamp: 'HAW 5/16/2024 10:00:12'!
+testRenameSystemCategoryAlsoRenameClassExtensions
+	
+	| oldCategoryName oldExtensionName newCategoryName newExtensionName classWithCategoryToRename classOrganizer metaclassOrganizer |
+
+	oldCategoryName := 'ACategoryToRename'. 
+	oldExtensionName := '*', oldCategoryName, ' SubCategory'.
+	newCategoryName := self classCategoryOfTestData.
+	newExtensionName := '*', newCategoryName, ' SubCategory'.
+	classWithCategoryToRename := self createClassNamed: #AClassWithCategoryToRename.
+	[ classOrganizer := classWithCategoryToRename organization.
+	classOrganizer addCategory: oldExtensionName.
+	metaclassOrganizer := classWithCategoryToRename class organization.
+	metaclassOrganizer addCategory: oldExtensionName.
+
+	SystemOrganization renameSystemCategory: oldCategoryName to: newCategoryName.
+
+	self assert: classWithCategoryToRename category equals: newCategoryName.
+	self deny: (classOrganizer categories includes: oldExtensionName).
+	self assert: (classOrganizer categories includes: newExtensionName).
+	self deny: (metaclassOrganizer categories includes: oldExtensionName).
+	self assert: (metaclassOrganizer categories includes: newExtensionName) ] ensure: [
+		SystemOrganization removeSystemCategory: oldCategoryName ].
+! !
 
 !ChangesTest methodsFor: 'assertions' stamp: 'jmv 7/31/2023 12:35:38'!
 assertIsLogged: aString times: stringCount and: aBlock
